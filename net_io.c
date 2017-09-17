@@ -1183,6 +1183,10 @@ char *generateAircraftJson(const char *url_path, int *len) {
             p += snprintf(p, end-p, ",\"speed\":%d", a->speed);
         if (trackDataValid(&a->category_valid))
             p += snprintf(p, end-p, ",\"category\":\"%02X\"", a->category);
+//Start CJS Add
+        if (trackDataValid(&a->opstatus.valid))
+            p += snprintf(p, end-p, ",\"incat\":\"%02X\"", a->opstatus.cc_1090_in & opstatus.cc_uat_in);
+//End CJS Add
 
         p += snprintf(p, end-p, ",\"mlat\":");
         p = append_flags(p, end, a, SOURCE_MLAT);
