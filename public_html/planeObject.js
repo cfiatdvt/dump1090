@@ -353,12 +353,12 @@ PlaneObject.prototype.updateIcon = function() {
         var opacity = 1.0;
         var outline = (this.position_from_mlat ? OutlineMlatColor : OutlineADSBColor);
         var add_stroke = (this.selected && !SelectedAllPlanes) ? ' stroke="black" stroke-width="1px"' : '';
-        var baseMarker = getBaseMarker(this.category, this.icaotype, this.typeDescription, this.wtc);
-        var rotation = (this.track === null ? 0 : this.track);
+        var baseMarker = getBaseMarker(this.category, this.icaotype, this.typeDescription, this.wtc, this.icao, this.speed, this.altitude);
+        var rottion = (this.track === null ? 0 : this.track);
         //var transparentBorderWidth = (32 / baseMarker.scale / scaleFactor).toFixed(1);
 
         var svgKey = col + '!' + outline + '!' + baseMarker.svg + '!' + add_stroke + "!" + scaleFactor;
-        var styleKey = opacity + '!' + rotation;
+        var styleKey = opacity + '!' + rottion;
 
         if (this.markerStyle === null || this.markerIcon === null || this.markerSvgKey != svgKey) {
                 //console.log(this.icao + " new icon and style " + this.markerSvgKey + " -> " + svgKey);
@@ -370,18 +370,47 @@ PlaneObject.prototype.updateIcon = function() {
                         scale: 1.2 * scaleFactor,
                         imgSize: baseMarker.size,
                         src: svgPathToURI(baseMarker.svg, outline, col, add_stroke),
-                        rotation: (baseMarker.noRotate ? 0 : rotation * Math.PI / 180.0),
+                        rotation: (baseMarker.noRotate ? 0 : rottion * Math.PI / 180.0),
                         opacity: opacity,
                         rotateWithView: (baseMarker.noRotate ? false : true)
                 });
 
-                this.markerIcon = icon;
-                this.markerStyle = new ol.style.Style({
-                        image: this.markerIcon
-                });
-                this.markerStaticIcon = null;
-                this.markerStaticStyle = new ol.style.Style({});
+//Start CJS Add
+// Bring back no-rotate heading pointers
+                if (baseMarker.noRotate) {
+                        // the base marker won't be rotated
+                        this.markerStaticIcon = icon;
+                        this.markerStaticStyle = new ol.style.Style({
+                                image: this.markerStaticIcon
+                        });
 
+                        // create an arrow that we will rotate around the base marker
+                        // to indicate heading
+
+                        var arrowPath = '<svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="black" ><path d="M 20,0 m 4,4 -8,0 4,-4 z"/></svg>';
+                        this.markerIcon = new ol.style.Icon({
+                                anchor: [20, 20],
+                                anchorXUnits: 'pixels',
+                                anchorYUnits: 'pixels',
+                                scale: 1.3,
+                                imgSize: [40, 40],
+                                src: "data:image/svg+xml;base64," + btoa(arrowPath),
+                                rotation: rottion * Math.PI / 180.0,
+                                opacity: 1.0,
+                                rotateWithView: true
+                        });
+                        this.markerStyle = new ol.style.Style({
+                                image: this.markerIcon
+                        });
+                } else {
+                    this.markerIcon = icon;
+                    this.markerStyle = new ol.style.Style({
+                            image: this.markerIcon
+                    });
+                    this.markerStaticIcon = null;
+                    this.markerStaticStyle = new ol.style.Style({});
+                }
+//End CJS Add
                 this.markerStyleKey = styleKey;
                 this.markerSvgKey = svgKey;
 
@@ -393,7 +422,7 @@ PlaneObject.prototype.updateIcon = function() {
 
         if (this.markerStyleKey != styleKey) {
                 //console.log(this.icao + " new rotation");
-                this.markerIcon.setRotation(rotation * Math.PI / 180.0);
+                this.markerIcon.setRotation(rottion * Math.PI / 180.0);
                 this.markerIcon.setOpacity(opacity);
                 if (this.staticIcon) {
                         this.staticIcon.setOpacity(opacity);
