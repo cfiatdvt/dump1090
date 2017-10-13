@@ -53,6 +53,219 @@ var layers;
 // piaware vs flightfeeder
 var isFlightFeeder = false;
 
+//Start CJS Add
+var WestFlowFeatures = new ol.Collection();
+var EastFlowFeatures = new ol.Collection();
+var TransitionFeatures = new ol.Collection();
+var ApproachFeatures = new ol.Collection();
+var NavaidFeatures = new ol.Collection();
+
+var interestArrayICAO = [];
+var interestArrayN = [];
+var interestArraysymb = [];
+var interestArraychk = [];
+var interestArraytype = [];
+
+var interestAJAXObject = null;
+
+//Make waypoint style with settable text label and x, y offsets
+function setwaypointFunction(wptname, wptlat, wptlon, xo, yo, suffix) {
+    var temppt = [wptlon, wptlat];
+    var tempwpt = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(temppt)));
+    if (xo != null) 
+    {
+        if (suffix != null)
+            tempwpt.setStyle(new ol.style.Style({
+                           image: new ol.style.Circle({
+                                  radius: 2,
+                                  snapToPixel: false,
+                                  fill: new ol.style.Fill({color: 'black'}),
+                           }),
+                           text: new ol.style.Text({
+                             font: '10px Calibri,sans-serif',
+                             fill: new ol.style.Fill({ color: '#000' }),
+                             stroke: new ol.style.Stroke({
+                               color: '#fff', width: 2 }),
+                             offsetX: xo,
+                             offsetY: yo,
+                             text: wptname+suffix
+                           })
+
+            }) );
+        else
+            tempwpt.setStyle(new ol.style.Style({
+                           image: new ol.style.Circle({
+                                  radius: 2,
+                                  snapToPixel: false,
+                                  fill: new ol.style.Fill({color: 'black'}),
+                           }),
+                           text: new ol.style.Text({
+                             font: '6px Calibri,sans-serif',
+                             fill: new ol.style.Fill({ color: '#000' }),
+                             stroke: new ol.style.Stroke({
+                               color: '#fff', width: 2 }),
+                             offsetX: xo,
+                             offsetY: yo,
+                             text: wptname
+                           })
+
+            }) );
+    }  
+    else
+    {
+        tempwpt.setStyle(new ol.style.Style({
+                           image: new ol.style.Circle({
+                                  radius: 2,
+                                  snapToPixel: false,
+                                  fill: new ol.style.Fill({color: 'black'}),
+                           }),
+        }) );
+    }
+    return tempwpt;
+}
+
+//Make VOR style with settable text label and x, y offsets
+function setvorFunction(wptname, wptlat, wptlon, xo, yo) {
+    var temppt = [wptlon, wptlat];
+    var tempwpt = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(temppt)));
+
+
+ //VOR SVG definition from: https://upload.wikimedia.org/wikipedia/commons/5/5f/Pictogram_VORTAC.svg
+    var asciipath = '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="97" height="85" stroke="#000" stroke-width="2"><path d="m1,26 15-25 20,12-15,25zm60-13 20-12 15,25-20,12zM34,60h29v23H34z"/><path fill="none" d="m21,38 13,22h29l13-22V13H21"/><circle cx="48" cy="37" r="7"/></svg>';  
+    var xmlpath = "data:image/svg+xml;base64," + btoa(asciipath);
+
+    var VOR = {
+        key : "VOR",
+        scale : 0.15,
+        size : [100, 90],
+        anchor : [48,38],
+        noRotate : true,
+        markerRadius: 60,
+        path: xmlpath
+    };
+
+    if (xo != null) 
+    {
+        tempwpt.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                        anchor: VOR.anchor,
+                        anchorXUnits: 'pixels',
+                        anchorYUnits: 'pixels',
+                        scale: VOR.scale,
+                        imgSize: VOR.size,
+                        src: VOR.path,
+                        rotation: 0,
+                        opacity: 1.0,
+                        rotateWithView: false
+                }),
+                text: new ol.style.Text({
+                        font: '6px Calibri,sans-serif',
+                        fill: new ol.style.Fill({ color: '#000' }),
+                        stroke: new ol.style.Stroke({
+                            color: '#fff', width: 2 }),
+                        offsetX: xo,
+                        offsetY: yo,
+                        text: wptname
+                       })
+
+            }) );
+    }  
+    else
+    {
+     if (true)   
+     { // Production code
+        tempwpt.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                        anchor: VOR.anchor,
+                        anchorXUnits: 'pixels',
+                        anchorYUnits: 'pixels',
+                        scale: VOR.scale,
+                        imgSize: VOR.size,
+                        src: VOR.path,
+                        rotation: 0,
+                        opacity: 1.0,
+                        rotateWithView: false
+                })
+        }) );
+     }
+     else
+     { // Test code
+       // testing different typess of svg files and how they work on the .Icon method of OpenLayers
+        var asciipath22  = '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="20" height="20" stroke="#0F0" stroke-width="12"><path d="M 250,40 270,40 270,10 250,10 250,40 z "/><path d="M 480,272 H 320 c 0,23.9-13.1,44.7-32.6,55.7 L 365.6,464 C 433.1,425.4,480,355.3,480,272 z "/><path d="M 256,208 c 11.7,0,22.7,3.2,32.1,8.7 l 80.6-138.3 C 335.6,59.1,297.1,48,256,48 c -41.2,0-79.9,11.2-113.1,30.6 l 79.8,138.8 C 232.4,211.4,243.8,208,256,208 z"/><path d="M 192,272 H 32 c 0,83.3,46.9,153.4,114.4,192 l 78.2-136.3 C 205.1,316.7,192,295.9,192,272 z"/></svg>';  
+        var asciipath222 = '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30px" height="30px" viewBox="8 6 408 341" preserveAspectRatio="xMidYMid meet" ><polyline stroke="black" stroke-width="5" style="fill: none;" id="e1_polyline" points="8.20898,175.366 12.6865,170.142 26.8656,164.918 52.2388,158.948 70.8955,156.709 98.5074,156.709 167.164,157.456 190.299,129.844 176.12,132.082 169.403,130.59 164.179,129.097 164.926,111.933 179.851,110.441 191.045,113.426 191.045,114.918 201.493,115.665 287.314,8.9477 311.941,6.70871 308.209,10.4407 257.463,114.918 248.508,155.963 298.508,156.709 330.597,160.441 350,162.679 386.567,120.142 406.717,120.888 389.552,167.903 399.254,167.903 400,169.396 412.687,171.635 415.672,174.62 412.687,179.097 402.985,182.829 400,182.082 400,183.575 396.269,185.814 390.299,186.56 405.224,229.844 385.075,230.59 350.747,188.799 332.09,193.276 316.418,194.769 294.776,197.008 248.508,197.008 258.955,239.545 309.702,343.276 313.433,346.261 290.299,344.769 285.821,343.276 199.254,235.067 188.806,238.799 188.806,239.545 176.866,242.53 164.926,239.545 164.926,222.381 176.866,220.888 189.552,223.873 168.657,197.008 91.791,195.515 61.194,194.769 37.3134,191.038 21.6419,187.306 12.6865,180.59 8.20898,176.859 8.20898,174.62"/></svg>';  
+        var asciipath4   = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 444.5 444.5" width="30" height="30"><defs><ellipse cx="222.5" cy="132" rx="18.2" ry="80.2" fill="#ce1126" id="blade"/></defs><circle cx="222.25" cy="222.25" r="222.25" fill="#003080"/><path d="M30.42,333.75L222.25,1.5L414.08,333.75z" fill="#fff"/><circle cx="222.25" cy="222.25" r="23" fill="#ce1126"/><use xlink:href="#blade"/><use xlink:href="#blade" transform="rotate(120 222.5 222.5)"/><use xlink:href="#blade" transform="rotate(240 222.5 222.5)"/></svg>';
+        var asciipath3   = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 444.5 444.5" width="30" height="30"><defs><ellipse cx="222.5" cy="132" rx="18.2" ry="80.2" fill="#ce1126" id="blade"/></defs><circle cx="222.25" cy="222.25" r="222.25" fill="#003080"/><path d="M30.42,333.75L222.25,1.5L414.08,333.75z" fill="#fff"/><circle cx="222.25" cy="222.25" r="23" fill="#ce1126"/><use xlink:href="#blade"/><use xlink:href="#blade" transform="rotate(120 222.5 222.5)"/><use xlink:href="#blade" transform="rotate(240 222.5 222.5)"/></svg>';
+        var asciipath223 = '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 15" stroke="#0F0" stroke-width="1"> </svg>';
+        var asciipath223_stroke = '<path  d="M.77,2.77A4.31,4.31,0,0,1,3,2.33a4.31,4.31,0,0,1,2.26.44l-.38.92A7.51,7.51,0,0,0,3,3.41a7.9,7.9,0,0,0-1.91.27Z"/><path d="M4.35,8.27a1.05,1.05,0,0,1-.59.93A3.5,3.5,0,0,0,2.62,6.63a1.71,1.71,0,0,1-.56,1.26l-.41.38a1.71,1.71,0,0,0-.56,1.26A1.79,1.79,0,0,0,2.4,11.21H3.6A1.79,1.79,0,0,0,4.92,9.52,1.71,1.71,0,0,0,4.35,8.27Z"/>';
+
+        var xmlpath2 = "data:image/svg+xml;base64," + btoa(asciipath223);
+ 
+        tempwpt.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                        scale: 5.0,
+                        imgSize: [6, 15],
+                        src: xmlpath2,
+                        rotation: 0,
+                        opacity: 1.0,
+                        rotateWithView: false
+                })
+        }) );
+     }
+    }
+    
+    return tempwpt;
+}
+
+
+// Set up line segments for each path 
+function setpathFunction(templinestring, pathstyle) {
+    templinestring.transform('EPSG:4326', 'EPSG:3857');
+    var templn = new ol.Feature(templinestring);
+    templn.setStyle(pathstyle);
+    return templn;
+}
+
+// Read the specialty airplane JSON files and populate the appropriate array so that the markers.js file can tag the icons appropriately
+function getSpecialtyIconData()
+{
+
+// List of airplanes of interest, stored in a JSON file.  Symb parameter dictates what SVG symbol to display
+  $.ajax({
+    async: true,
+    url: 'data/PlanesOfInterest.json',
+    data: "",
+    cache: false,
+    accepts:'application/json',
+    dataType: 'json',
+    error: function (x,s) {
+        interestAJAXObject = x;
+        alert("Error reading AirplanesOfInterest.json\n" + s);
+    },
+    success: function (data) {
+        interestAJAXObject = data;
+        for (var i = 0; i < data.length; i++) {
+            interestArrayICAO.push( data[i].ICAO );
+            interestArrayN.push( data[i].N );
+            interestArraysymb.push( data[i].symb );
+            interestArraychk.push( data[i].chk );
+            interestArraytype.push( data[i].type );
+        }
+    }
+  });
+}
+
+function clearSpecialtyIconData() {
+
+  interestArrayICAO.length = 0;
+  interestArrayN.length = 0;
+  interestArraysymb.length = 0;
+  interestArraychk.length = 0;
+  interestArraytype.length = 0;
+}
+
+
+//End CJS Add
+
 function processReceiverUpdate(data) {
 	// Loop through all the planes in the data packet
         var now = data.now;
@@ -149,7 +362,7 @@ function fetchData() {
 
                 processReceiverUpdate(data);
 
-                // update timestamps, visibility, history track for all planes - not only those updated
+                // update timestamps, visibility, history ghted for all planes - not only those updated
                 for (var i = 0; i < PlanesOrdered.length; ++i) {
                         var plane = PlanesOrdered[i];
                         plane.updateTick(now, LastReceiverTimestamp);
@@ -275,6 +488,55 @@ function initialize() {
         	}
         	
         });
+
+//Start CJS Add
+        $('#emitter_checkbox').on('click', function() {
+                if ($('#emitter_checkbox').hasClass('settingsCheckboxChecked')) {
+                    $('#emitter_checkbox').removeClass('settingsCheckboxChecked');
+                }else {
+                    $('#emitter_checkbox').addClass('settingsCheckboxChecked');
+                }
+        });
+
+        $('#flowToggle').on('click', function() {
+                if ($('#flowToggle').hasClass('settingsCheckboxChecked')) 
+                {  // West flow
+                    $('#flowToggle').removeClass('settingsCheckboxChecked');
+                    $('#kphx_west_flow_checkbox').addClass('settingsCheckboxChecked');
+                    $('#kphx_east_flow_checkbox').removeClass('settingsCheckboxChecked');
+//                    toggleLayer('#kphx_west_flow_checkbox', 'kphx_proc_west');
+                    ol.control.LayerSwitcher.forEachRecursive(layers, function(lyr) {
+                        if (lyr.get('name') === 'kphx_proc_west') {
+                            lyr.setVisible(true);
+                        }
+                    })
+                    ol.control.LayerSwitcher.forEachRecursive(layers, function(lyr) {
+                        if (lyr.get('name') === 'kphx_proc_east') {
+                            lyr.setVisible(false);
+                        }
+                    })
+                }
+                else
+                {  // East flow
+                    $('#flowToggle').addClass('settingsCheckboxChecked');
+                    $('#kphx_east_flow_checkbox').addClass('settingsCheckboxChecked');
+                    $('#kphx_west_flow_checkbox').removeClass('settingsCheckboxChecked');
+//  		            toggleLayer('#kphx_east_flow_checkbox', 'kphx_proc_east');
+                    ol.control.LayerSwitcher.forEachRecursive(layers, function(lyr) {
+                        if (lyr.get('name') === 'kphx_proc_east') {
+                            lyr.setVisible(true);
+                        }
+                    })
+                    ol.control.LayerSwitcher.forEachRecursive(layers, function(lyr) {
+                        if (lyr.get('name') === 'kphx_proc_west') {
+                            lyr.setVisible(false);
+                        }
+                    })
+                }
+        });
+
+
+//End CJS Add
 
         $('#altitude_checkbox').on('click', function() {
         	toggleAltitudeChart(true);
@@ -506,6 +768,50 @@ function initialize_map() {
                                 })
                         }),
 
+//Start CJS Add
+                        new ol.layer.Vector({
+                                name: 'kphx_proc_west',
+                                type: 'overlay',
+                                title: 'SIDs, STARs; west flow',
+                                source: new ol.source.Vector({
+                                        features: WestFlowFeatures,
+                                })
+                        }),
+                        new ol.layer.Vector({
+                                name: 'kphx_proc_east',
+                                type: 'overlay',
+                                title: 'SIDs, STARs; east flow',
+                                source: new ol.source.Vector({
+                                        features: EastFlowFeatures,
+                                })
+                        }),
+                        new ol.layer.Vector({
+                                name: 'kphx_proc_trans',
+                                type: 'overlay',
+                                title: 'SID/STAR Transitions',
+                                source: new ol.source.Vector({
+                                        features: TransitionFeatures,
+                                })
+                        }),
+                        new ol.layer.Vector({
+                                name: 'phoenix_approaches',
+                                type: 'overlay',
+                                title: 'Instrument Approaches',
+                                source: new ol.source.Vector({
+                                        features: ApproachFeatures,
+                                })
+                        }),
+                        new ol.layer.Vector({
+                                name: 'Navaids',
+                                type: 'overlay',
+                                title: 'Navaids',
+                                source: new ol.source.Vector({
+                                        features: NavaidFeatures,
+                                })
+                        }),
+
+ //End CJS Add
+
                         iconsLayer
                 ]
         }));
@@ -648,6 +954,12 @@ function initialize_map() {
 		toggleLayer('#sitepos_checkbox', 'site_pos');
 		toggleLayer('#actrail_checkbox', 'ac_trail');
 		toggleLayer('#acpositions_checkbox', 'ac_positions');
+//Start CJS Add
+		toggleLayer('#kphx_west_flow_checkbox', 'kphx_proc_west');
+		toggleLayer('#kphx_east_flow_checkbox', 'kphx_proc_east');
+		toggleLayer('#kphx_transition_checkbox', 'kphx_proc_trans');
+		toggleLayer('#phoenix_approach_checkbox', 'phoenix_approaches');
+//End CJS Add
 	});
 
 	// Add home marker if requested
@@ -671,6 +983,811 @@ function initialize_map() {
                     createSiteCircleFeatures();
                 }
 	}
+
+//Start CJS Add
+
+        var waypointStyle = new ol.style.Style({
+                        image: new ol.style.Circle({
+                                radius: 2,
+                                snapToPixel: false,
+                                fill: new ol.style.Fill({color: 'black'}),
+                        })
+        });
+
+
+        var SIDStyle = new ol.style.Style({
+            fill: null,
+            stroke: new ol.style.Stroke({
+                    color: 'blue',
+                    width: 0.5
+            })
+        });
+
+        var STARStyle = new ol.style.Style({
+            fill: null,
+            stroke: new ol.style.Stroke({
+                    color: 'green',
+                    width: 1
+            })
+        });
+        var APPRStyle = new ol.style.Style({
+            fill: null,
+            stroke: new ol.style.Stroke({
+                    color: 'purple',
+                 lineDash: [4,8],
+                    width: 1
+            })
+        });
+
+        // VORs
+        var SJNvor = setvorFunction("SJN", 34.424, -109.143,14,4);
+        var GCNvor = setvorFunction("GCN", 35.96, -112.146);
+        var ZUNvor = setvorFunction("ZUN",34.966, -109.154,14,4);
+        var INWvor = setvorFunction("INW", 35.061, -110.795);
+        var IWAvor = setvorFunction("IWA", 33.303, -111.651);
+        var PXRvor = setvorFunction("PXR", 33.433, -111.97);
+        var TFDvor = setvorFunction("TFD", 32.886, -111.909);
+        var BXKvor = setvorFunction("BXK", 33.453, -112.825);
+        var FLGvor = setvorFunction("FLG", 35.147, -111.674);
+        var DRKvor = setvorFunction("DRK", 34.703, -112.480,0,12);
+        var GBNvor = setvorFunction("GBN", 32.956, -112.674);
+        var BZAvor = setvorFunction("BZA", 32.768, -114.603,0,-10);
+        var PKEvor = setvorFunction("PKE", 34.102, -114.682,14,4);
+        var EEDvor = setvorFunction("EED", 34.766, -114.474);
+        var BLHvor = setvorFunction("BLH", 33.596, -114.761,14,4);
+        var BLDvor = setvorFunction("BLD", 35.996, -114.864);
+        var PGSvor = setvorFunction("PGS", 35.625, -113.544,14,4);
+        var TBCvor = setvorFunction("TBC", 36.121, -111.269);
+        var GUPvor = setvorFunction("GUP", 35.476, -108.873,14,4);
+        var SSOvor = setvorFunction("SSO", 32.269, -109.263,0,12);
+        var TUSvor = setvorFunction("TUS", 32.095, -110.915);
+        var OLSvor = setvorFunction("OLS", 31.415, -110.849);
+        var DUGvor = setvorFunction("DUG", 31.473, -109.602);
+        var DMNvor = setvorFunction("DMN", 32.27, -107.602);
+        var IPLvor = setvorFunction("IPL", 32.749, -115.509);
+        var TRMvor = setvorFunction("TRM", 33.628, -116.160);
+        var TNPvor = setvorFunction("TNP", 34.112, -115.770);
+        var GFSvor = setvorFunction("GFS", 35.131, -115.176);
+        var PGAvor = setvorFunction("PGA", 36.931, -111.447);
+        var SVCvor = setvorFunction("SVC", 32.638, -108.161);
+        NavaidFeatures.push(SJNvor);
+        NavaidFeatures.push(GCNvor);
+        NavaidFeatures.push(ZUNvor);
+        NavaidFeatures.push(INWvor);
+        NavaidFeatures.push(IWAvor);
+        NavaidFeatures.push(PXRvor);
+        NavaidFeatures.push(TFDvor);
+        NavaidFeatures.push(BXKvor);
+        NavaidFeatures.push(FLGvor);
+        NavaidFeatures.push(DRKvor);
+        NavaidFeatures.push(GBNvor);
+        NavaidFeatures.push(BZAvor);
+        NavaidFeatures.push(PKEvor);
+        NavaidFeatures.push(EEDvor);
+        NavaidFeatures.push(BLHvor);
+        NavaidFeatures.push(BLDvor);
+        NavaidFeatures.push(PGSvor);
+        NavaidFeatures.push(TBCvor);
+        NavaidFeatures.push(GUPvor);
+        NavaidFeatures.push(SSOvor);
+        NavaidFeatures.push(TUSvor);
+        NavaidFeatures.push(OLSvor);
+        NavaidFeatures.push(DUGvor);
+        NavaidFeatures.push(DMNvor);
+        NavaidFeatures.push(IPLvor);
+        NavaidFeatures.push(TRMvor);
+        NavaidFeatures.push(TNPvor);
+        NavaidFeatures.push(GFSvor);
+        NavaidFeatures.push(PGAvor);
+        NavaidFeatures.push(SVCvor);
+
+        // Regional waypoints
+        var TIRONwpt = setwaypointFunction("TIRON", 33.62, -112.92,14,0);
+        var SPTFRwpt = setwaypointFunction("SPTFR", 33.397, -113.725,-12,4);
+        var JCOBSwpt = setwaypointFunction("JCOBS", 34.30, -111.915,14,0);
+        var KARLOwpt = setwaypointFunction("KARLO", 34.291, -112.495,14,0);
+        var DSERTwpt = setwaypointFunction("DSERT", 34.44, -111.66,8,5);
+        TransitionFeatures.push(TIRONwpt);
+        TransitionFeatures.push(SPTFRwpt);
+        TransitionFeatures.push(JCOBSwpt);
+        TransitionFeatures.push(KARLOwpt);
+        TransitionFeatures.push(DSERTwpt);
+
+
+        // KIWA IZZZO6 departure
+        var IZZZOwpt = setwaypointFunction("IZZZO", 33.45, -112.80, 0, 8, "6"); 
+        var KEENSwpt = setwaypointFunction("KEENS", 33.45, -112.60, 0, 8);
+        var HRRBRwpt = setwaypointFunction("HRRBR", 33.64, -113.852);        
+        var CULTSwpt = setwaypointFunction("CULTS", 33.585, -113.505);        
+        var MESSIwpt = setwaypointFunction("MESSI", 33.80, -113.81);        
+        var MASVEwpt = setwaypointFunction("MASVE", 33.355, -111.92);
+        var SALOMwpt = setwaypointFunction("SALOM", 33.516, -113.889);
+        var FUTEPwpt = setwaypointFunction("FUTEP", 33.435, -111.872);
+        var AZCRDwpt = setwaypointFunction("AZCRD", 33.394, -111.837);
+        var USEYEwpt = setwaypointFunction("USEYE", 33.350, -111.868);
+        WestFlowFeatures.push(KEENSwpt);
+        WestFlowFeatures.push(IZZZOwpt);
+        EastFlowFeatures.push(FUTEPwpt);
+        EastFlowFeatures.push(AZCRDwpt);
+        EastFlowFeatures.push(USEYEwpt);
+        EastFlowFeatures.push(MASVEwpt);
+        EastFlowFeatures.push(KEENSwpt);
+        EastFlowFeatures.push(IZZZOwpt);
+        TransitionFeatures.push(MESSIwpt);
+        TransitionFeatures.push(CULTSwpt);
+        TransitionFeatures.push(HRRBRwpt);
+        TransitionFeatures.push(SALOMwpt);
+        var IZZZO61 = new ol.geom.LineString();
+        var IZZZO62 = new ol.geom.LineString();
+        var IZZZO63 = new ol.geom.LineString();
+        var IZZZO64 = new ol.geom.LineString();
+        var IZZZO65 = new ol.geom.LineString();
+        IZZZO61.appendCoordinate(ol.proj.transform(KEENSwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO61.appendCoordinate(ol.proj.transform(IZZZOwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO62.appendCoordinate(ol.proj.transform(FUTEPwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO62.appendCoordinate(ol.proj.transform(AZCRDwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO62.appendCoordinate(ol.proj.transform(USEYEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO62.appendCoordinate(ol.proj.transform(MASVEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO62.appendCoordinate(ol.proj.transform(KEENSwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO62.appendCoordinate(ol.proj.transform(IZZZOwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO63.appendCoordinate(ol.proj.transform(IZZZOwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO63.appendCoordinate(ol.proj.transform(CULTSwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO63.appendCoordinate(ol.proj.transform(HRRBRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO64.appendCoordinate(ol.proj.transform(IZZZOwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO64.appendCoordinate(ol.proj.transform(MESSIwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO65.appendCoordinate(ol.proj.transform(IZZZOwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO65.appendCoordinate(ol.proj.transform(SALOMwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        IZZZO65.appendCoordinate(ol.proj.transform(BLHvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var IZZZO61ln = setpathFunction(IZZZO61, SIDStyle);
+        var IZZZO62ln = setpathFunction(IZZZO62, SIDStyle);
+        var IZZZO63ln = setpathFunction(IZZZO63, SIDStyle);
+        var IZZZO64ln = setpathFunction(IZZZO64, SIDStyle);
+        var IZZZO65ln = setpathFunction(IZZZO65, SIDStyle);
+        WestFlowFeatures.push(IZZZO61ln);
+        EastFlowFeatures.push(IZZZO62ln);
+        TransitionFeatures.push(IZZZO63ln);
+        TransitionFeatures.push(IZZZO64ln);
+        TransitionFeatures.push(IZZZO65ln);
+ 
+        // KPHX MAYSA5, SNOBL5, YOTES5, LALUZ5 departure
+        var MAYSAwpt = setwaypointFunction("MAYSA", 34.562, -112.875,-24,8,"5");
+        var SNOBLwpt = setwaypointFunction("SNOBL", 34.426, -111.97,24,0,"5");
+        var YOTESwpt = setwaypointFunction("YOTES", 34.625, -111.119,22,5,"5");
+        var LALUZwpt = setwaypointFunction("LALUZ", 34.055, -110.216,14,8,"5");
+        var INT01wpt = setwaypointFunction("INT01", 33.443, -112.086);
+        var TWSNDwpt = setwaypointFunction("TWSND", 33.53, -112.173);
+        var OXYGNwpt = setwaypointFunction("OXYGN", 33.615, -112.172,14,2);
+        var ZILUBwpt = setwaypointFunction("ZILUB", 33.75, -112.00,-14,-2);
+        var ZEPERwpt = setwaypointFunction("ZEPER", 34.028, -112.335,-14,2);
+        var QUAKYwpt = setwaypointFunction("QUAKY", 34.098, -111.935,14,4);
+        var CARTLwpt = setwaypointFunction("CARTL", 34.75, -112.00,14,0);
+        var FORPEwpt = setwaypointFunction("FORPE", 33.687, -111.268,10,6);
+        var SPRKYwpt = setwaypointFunction("SPRKY", 33.436, -111.891);
+        var GOALYwpt = setwaypointFunction("GOALY", 33.651, -111.836,14,2);
+        var GOLDRwpt = setwaypointFunction("GOLDR", 33.733, -111.851,-14,2);
+        var POCCKwpt = setwaypointFunction("POCCK", 33.796, -111.786, 14,3);
+        var MRBILwpt = setwaypointFunction("MRBIL", 34.00, -111.60,14,2);
+        var YOOPRwpt = setwaypointFunction("YOOPR", 35.652, -110.43);
+        var JARPAwpt = setwaypointFunction("JARPA", 35.70, -109.78);
+        var JKPOTwpt = setwaypointFunction("JKPOT", 34.69, -113.01);
+        var SISIEwpt = setwaypointFunction("SISIE", 34.984, -113.338);
+        WestFlowFeatures.push(TWSNDwpt);
+        WestFlowFeatures.push(OXYGNwpt);
+        WestFlowFeatures.push(ZILUBwpt);
+        WestFlowFeatures.push(ZEPERwpt);
+        WestFlowFeatures.push(MAYSAwpt);
+        WestFlowFeatures.push(LALUZwpt);
+        WestFlowFeatures.push(QUAKYwpt);
+        WestFlowFeatures.push(SNOBLwpt);
+        WestFlowFeatures.push(FORPEwpt);
+        WestFlowFeatures.push(SJNvor);
+        WestFlowFeatures.push(MRBILwpt);
+        WestFlowFeatures.push(YOTESwpt);
+        EastFlowFeatures.push(SPRKYwpt);
+        EastFlowFeatures.push(GOALYwpt);
+        EastFlowFeatures.push(QUAKYwpt);
+        EastFlowFeatures.push(SNOBLwpt);
+        EastFlowFeatures.push(CARTLwpt);
+        EastFlowFeatures.push(GOLDRwpt);
+        EastFlowFeatures.push(ZEPERwpt);
+        EastFlowFeatures.push(MAYSAwpt);
+        EastFlowFeatures.push(LALUZwpt);
+        EastFlowFeatures.push(FORPEwpt);
+        EastFlowFeatures.push(SJNvor);
+        EastFlowFeatures.push(POCCKwpt);
+        EastFlowFeatures.push(MRBILwpt);
+        EastFlowFeatures.push(YOTESwpt);
+        TransitionFeatures.push(CARTLwpt);
+        TransitionFeatures.push(GCNvor);
+        TransitionFeatures.push(YOOPRwpt);
+        TransitionFeatures.push(JARPAwpt);
+        TransitionFeatures.push(JKPOTwpt);
+        TransitionFeatures.push(SISIEwpt);
+        var MAYSA51 = new ol.geom.LineString();
+        var MAYSA52 = new ol.geom.LineString();
+        var MAYSA53 = new ol.geom.LineString();
+        var MAYSA54 = new ol.geom.LineString();
+        var MAYSA55 = new ol.geom.LineString();
+        var SNOBL51 = new ol.geom.LineString();
+        var SNOBL52 = new ol.geom.LineString();
+        var SNOBL53 = new ol.geom.LineString();
+        var SNOBL54 = new ol.geom.LineString();
+        var SNOBL55 = new ol.geom.LineString();
+        var YOTES51 = new ol.geom.LineString();
+        var YOTES52 = new ol.geom.LineString();
+        var YOTES53 = new ol.geom.LineString();
+        var YOTES54 = new ol.geom.LineString();
+        var YOTES55 = new ol.geom.LineString();
+        var LALUZ51 = new ol.geom.LineString();
+        var LALUZ52 = new ol.geom.LineString();
+        var LALUZ53 = new ol.geom.LineString();
+        MAYSA51.appendCoordinate(ol.proj.transform(INT01wpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA51.appendCoordinate(ol.proj.transform(TWSNDwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA51.appendCoordinate(ol.proj.transform(ZEPERwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA52.appendCoordinate(ol.proj.transform(SPRKYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA52.appendCoordinate(ol.proj.transform(GOALYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA52.appendCoordinate(ol.proj.transform(GOLDRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA52.appendCoordinate(ol.proj.transform(ZEPERwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA53.appendCoordinate(ol.proj.transform(ZEPERwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA53.appendCoordinate(ol.proj.transform(MAYSAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA54.appendCoordinate(ol.proj.transform(MAYSAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA54.appendCoordinate(ol.proj.transform(JKPOTwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA55.appendCoordinate(ol.proj.transform(MAYSAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MAYSA55.appendCoordinate(ol.proj.transform(SISIEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL51.appendCoordinate(ol.proj.transform(TWSNDwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL51.appendCoordinate(ol.proj.transform(OXYGNwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL51.appendCoordinate(ol.proj.transform(ZILUBwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL51.appendCoordinate(ol.proj.transform(QUAKYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL51.appendCoordinate(ol.proj.transform(SNOBLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL52.appendCoordinate(ol.proj.transform(GOALYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL52.appendCoordinate(ol.proj.transform(QUAKYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL52.appendCoordinate(ol.proj.transform(SNOBLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL53.appendCoordinate(ol.proj.transform(SNOBLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL53.appendCoordinate(ol.proj.transform(CARTLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL53.appendCoordinate(ol.proj.transform(GCNvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL54.appendCoordinate(ol.proj.transform(CARTLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL54.appendCoordinate(ol.proj.transform(YOOPRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL55.appendCoordinate(ol.proj.transform(CARTLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SNOBL55.appendCoordinate(ol.proj.transform(JARPAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES51.appendCoordinate(ol.proj.transform(ZILUBwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES51.appendCoordinate(ol.proj.transform(MRBILwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES51.appendCoordinate(ol.proj.transform(YOTESwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES52.appendCoordinate(ol.proj.transform(GOALYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES52.appendCoordinate(ol.proj.transform(POCCKwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES52.appendCoordinate(ol.proj.transform(MRBILwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES52.appendCoordinate(ol.proj.transform(YOTESwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES53.appendCoordinate(ol.proj.transform(YOTESwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES53.appendCoordinate(ol.proj.transform(YOOPRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES54.appendCoordinate(ol.proj.transform(YOTESwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES54.appendCoordinate(ol.proj.transform(JARPAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES55.appendCoordinate(ol.proj.transform(YOTESwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        YOTES55.appendCoordinate(ol.proj.transform(GCNvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        LALUZ51.appendCoordinate(ol.proj.transform(ZILUBwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        LALUZ51.appendCoordinate(ol.proj.transform(FORPEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        LALUZ51.appendCoordinate(ol.proj.transform(LALUZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        LALUZ52.appendCoordinate(ol.proj.transform(SPRKYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        LALUZ52.appendCoordinate(ol.proj.transform(FORPEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        LALUZ52.appendCoordinate(ol.proj.transform(LALUZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        LALUZ53.appendCoordinate(ol.proj.transform(LALUZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        LALUZ53.appendCoordinate(ol.proj.transform(SJNvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var MAYSA51ln = setpathFunction(MAYSA51, SIDStyle);
+        var MAYSA52ln = setpathFunction(MAYSA52, SIDStyle);
+        var MAYSA53ln = setpathFunction(MAYSA53, SIDStyle);
+        var MAYSA54ln = setpathFunction(MAYSA54, SIDStyle);
+        var MAYSA55ln = setpathFunction(MAYSA55, SIDStyle);
+        var SNOBL51ln = setpathFunction(SNOBL51, SIDStyle);
+        var SNOBL52ln = setpathFunction(SNOBL52, SIDStyle);
+        var SNOBL53ln = setpathFunction(SNOBL53, SIDStyle);
+        var SNOBL54ln = setpathFunction(SNOBL54, SIDStyle);
+        var SNOBL55ln = setpathFunction(SNOBL55, SIDStyle);
+        var YOTES51ln = setpathFunction(YOTES51, SIDStyle);
+        var YOTES52ln = setpathFunction(YOTES52, SIDStyle);
+        var YOTES53ln = setpathFunction(YOTES53, SIDStyle);
+        var YOTES54ln = setpathFunction(YOTES54, SIDStyle);
+        var YOTES55ln = setpathFunction(YOTES55, SIDStyle);
+        var LALUZ51ln = setpathFunction(LALUZ51, SIDStyle);
+        var LALUZ52ln = setpathFunction(LALUZ52, SIDStyle);
+        var LALUZ53ln = setpathFunction(LALUZ53, SIDStyle);
+        WestFlowFeatures.push(MAYSA51ln);
+        WestFlowFeatures.push(MAYSA53ln);
+        EastFlowFeatures.push(MAYSA52ln);
+        EastFlowFeatures.push(MAYSA53ln);
+        TransitionFeatures.push(MAYSA54ln);
+        TransitionFeatures.push(MAYSA55ln);
+        WestFlowFeatures.push(SNOBL51ln);
+        EastFlowFeatures.push(SNOBL52ln);
+        TransitionFeatures.push(SNOBL53ln);
+        TransitionFeatures.push(SNOBL54ln);
+        TransitionFeatures.push(SNOBL55ln);
+        WestFlowFeatures.push(YOTES51ln);
+        EastFlowFeatures.push(YOTES52ln);
+        TransitionFeatures.push(YOTES53ln);
+        TransitionFeatures.push(YOTES54ln);
+        TransitionFeatures.push(YOTES55ln);
+        WestFlowFeatures.push(LALUZ51ln);
+        EastFlowFeatures.push(LALUZ52ln);
+        TransitionFeatures.push(LALUZ53ln);
+
+        // KPHX FTHLS5, KATMN5, BNYRD5, JUDTH6 departure
+        var DAVZZwpt = setwaypointFunction("DAVZZ", 33.38, -112.14);
+        var VANZZwpt = setwaypointFunction("VANZZ", 33.326, -112.146);
+        var BUNEEwpt = setwaypointFunction("BUNEE", 33.249, -112.105,-10,4);
+        var BROAKwpt = setwaypointFunction("BROAK", 33.53, -111.22,10,6);
+        var FTHLSwpt = setwaypointFunction("FTHLS", 33.768, -110.364,10,10,"5");
+        var JNIPRwpt = setwaypointFunction("JNIPR", 34.03, -109.32);
+        var ECLPSwpt = setwaypointFunction("ECLPS", 33.07, -111.45,-10,6);
+        var KATMNwpt = setwaypointFunction("KATMN", 32.64, -110.67,-12,10,"5");
+        var BOXXRwpt = setwaypointFunction("BOXXR", 32.44, -109.752);
+        var PHASEwpt = setwaypointFunction("PHASE", 32.361, -109.158);
+        var ANZELwpt = setwaypointFunction("ANZEL", 33.36, -111.80);
+        var DDUKEwpt = setwaypointFunction("DDUKE", 33.155, -111.854);
+        var BNYRDwpt = setwaypointFunction("BNYRD", 32.998, -111.966,-24,3,"5");
+        var JUDTHwpt = setwaypointFunction("JUDTH", 32.816, -113.68,10,8,"6");
+        var MOHAKwpt = setwaypointFunction("MOHAK", 32.776, -113.971,4,4);
+        var OAKLIwpt = setwaypointFunction("OAKLI", 33.350, -112.014);
+        var CLUBZwpt = setwaypointFunction("CLUBZ", 33.253, -112.195);
+        WestFlowFeatures.push(DAVZZwpt);
+        WestFlowFeatures.push(VANZZwpt);
+        WestFlowFeatures.push(BUNEEwpt);
+        WestFlowFeatures.push(BROAKwpt);
+        WestFlowFeatures.push(FTHLSwpt);
+        WestFlowFeatures.push(ECLPSwpt);
+        WestFlowFeatures.push(KATMNwpt);
+        WestFlowFeatures.push(BNYRDwpt);
+        WestFlowFeatures.push(CLUBZwpt);
+        WestFlowFeatures.push(JUDTHwpt);
+        EastFlowFeatures.push(BROAKwpt);
+        EastFlowFeatures.push(FTHLSwpt);
+        EastFlowFeatures.push(ECLPSwpt);
+        EastFlowFeatures.push(KATMNwpt);
+        EastFlowFeatures.push(ANZELwpt);
+        EastFlowFeatures.push(DDUKEwpt);
+        EastFlowFeatures.push(BNYRDwpt);
+        EastFlowFeatures.push(OAKLIwpt);
+        EastFlowFeatures.push(JUDTHwpt);
+        TransitionFeatures.push(JNIPRwpt);
+        TransitionFeatures.push(BOXXRwpt);
+        TransitionFeatures.push(PHASEwpt);
+        TransitionFeatures.push(MOHAKwpt);
+        var FTHLS51 = new ol.geom.LineString();
+        var FTHLS52 = new ol.geom.LineString();
+        var FTHLS53 = new ol.geom.LineString();
+        var KATMN51 = new ol.geom.LineString();
+        var KATMN52 = new ol.geom.LineString();
+        var KATMN53 = new ol.geom.LineString();
+        var BNYRD51 = new ol.geom.LineString();
+        var BNYRD52 = new ol.geom.LineString();
+        var BNYRD53 = new ol.geom.LineString();
+        var JUDTH51 = new ol.geom.LineString();
+        var JUDTH52 = new ol.geom.LineString();
+        var JUDTH53 = new ol.geom.LineString();
+        FTHLS51.appendCoordinate(ol.proj.transform(DAVZZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FTHLS51.appendCoordinate(ol.proj.transform(VANZZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FTHLS51.appendCoordinate(ol.proj.transform(BUNEEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FTHLS51.appendCoordinate(ol.proj.transform(BROAKwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FTHLS51.appendCoordinate(ol.proj.transform(FTHLSwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FTHLS52.appendCoordinate(ol.proj.transform(SPRKYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FTHLS52.appendCoordinate(ol.proj.transform(BROAKwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FTHLS52.appendCoordinate(ol.proj.transform(FTHLSwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FTHLS53.appendCoordinate(ol.proj.transform(FTHLSwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FTHLS53.appendCoordinate(ol.proj.transform(JNIPRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        KATMN51.appendCoordinate(ol.proj.transform(BUNEEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        KATMN51.appendCoordinate(ol.proj.transform(ECLPSwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        KATMN51.appendCoordinate(ol.proj.transform(KATMNwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        KATMN52.appendCoordinate(ol.proj.transform(SPRKYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        KATMN52.appendCoordinate(ol.proj.transform(ECLPSwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        KATMN52.appendCoordinate(ol.proj.transform(KATMNwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        KATMN53.appendCoordinate(ol.proj.transform(KATMNwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        KATMN53.appendCoordinate(ol.proj.transform(BOXXRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        KATMN53.appendCoordinate(ol.proj.transform(PHASEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BNYRD51.appendCoordinate(ol.proj.transform(VANZZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BNYRD51.appendCoordinate(ol.proj.transform(BNYRDwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BNYRD52.appendCoordinate(ol.proj.transform(SPRKYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BNYRD52.appendCoordinate(ol.proj.transform(ANZELwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BNYRD52.appendCoordinate(ol.proj.transform(DDUKEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BNYRD52.appendCoordinate(ol.proj.transform(BNYRDwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BNYRD53.appendCoordinate(ol.proj.transform(BNYRDwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BNYRD53.appendCoordinate(ol.proj.transform(TFDvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BNYRD53.appendCoordinate(ol.proj.transform(TUSvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        JUDTH51.appendCoordinate(ol.proj.transform(VANZZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        JUDTH51.appendCoordinate(ol.proj.transform(CLUBZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        JUDTH51.appendCoordinate(ol.proj.transform(GBNvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        JUDTH51.appendCoordinate(ol.proj.transform(JUDTHwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        JUDTH52.appendCoordinate(ol.proj.transform(USEYEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        JUDTH52.appendCoordinate(ol.proj.transform(OAKLIwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        JUDTH52.appendCoordinate(ol.proj.transform(GBNvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        JUDTH52.appendCoordinate(ol.proj.transform(JUDTHwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        JUDTH53.appendCoordinate(ol.proj.transform(JUDTHwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        JUDTH53.appendCoordinate(ol.proj.transform(MOHAKwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var FTHLS51ln = setpathFunction(FTHLS51, SIDStyle);
+        var FTHLS52ln = setpathFunction(FTHLS52, SIDStyle);
+        var FTHLS53ln = setpathFunction(FTHLS53, SIDStyle);
+        var KATMN51ln = setpathFunction(KATMN51, SIDStyle);
+        var KATMN52ln = setpathFunction(KATMN52, SIDStyle);
+        var KATMN53ln = setpathFunction(KATMN53, SIDStyle);
+        var BNYRD51ln = setpathFunction(BNYRD51, SIDStyle);
+        var BNYRD52ln = setpathFunction(BNYRD52, SIDStyle);
+        var BNYRD53ln = setpathFunction(BNYRD53, SIDStyle);
+        var JUDTH51ln = setpathFunction(JUDTH51, SIDStyle);
+        var JUDTH52ln = setpathFunction(JUDTH52, SIDStyle);
+        var JUDTH53ln = setpathFunction(JUDTH53, SIDStyle);
+        WestFlowFeatures.push(FTHLS51ln);
+        EastFlowFeatures.push(FTHLS52ln);
+        TransitionFeatures.push(FTHLS53ln);
+        WestFlowFeatures.push(KATMN51ln);
+        EastFlowFeatures.push(KATMN52ln);
+        TransitionFeatures.push(KATMN53ln);
+        WestFlowFeatures.push(BNYRD51ln);
+        EastFlowFeatures.push(BNYRD52ln);
+        TransitionFeatures.push(BNYRD53ln);
+        WestFlowFeatures.push(JUDTH51ln);
+        EastFlowFeatures.push(JUDTH52ln);
+        TransitionFeatures.push(JUDTH53ln);
+
+
+        // KPHX EAGUL6 arrival
+        var EAGULwpt = setwaypointFunction("EAGUL",34.132, -111.083,22,6,"6");
+        var SLIDRwpt = setwaypointFunction("SLIDR",34.71, -109.852);
+        var PAYSOwpt = setwaypointFunction("PAYSO",34.352, -110.79);
+        var HOMRRwpt = setwaypointFunction("HOMRR",33.88, -111.41);
+        var DERVLwpt = setwaypointFunction("DERVL",33.47, -111.76);
+        var QUENYwpt = setwaypointFunction("QUENY",33.625, -111.887);
+        var HINEYwpt = setwaypointFunction("HINEY",33.525, -112.073);
+        var OBASEwpt = setwaypointFunction("OBASE",33.525, -112.16);
+        WestFlowFeatures.push(ZUNvor);
+        WestFlowFeatures.push(INWvor);
+        WestFlowFeatures.push(SLIDRwpt);
+        WestFlowFeatures.push(PAYSOwpt);
+        WestFlowFeatures.push(EAGULwpt);
+        WestFlowFeatures.push(HOMRRwpt);
+        WestFlowFeatures.push(DERVLwpt);
+        EastFlowFeatures.push(ZUNvor);
+        EastFlowFeatures.push(SLIDRwpt);
+        EastFlowFeatures.push(PAYSOwpt);
+        EastFlowFeatures.push(EAGULwpt);
+        EastFlowFeatures.push(HOMRRwpt);
+        EastFlowFeatures.push(QUENYwpt);
+        EastFlowFeatures.push(HINEYwpt);
+        EastFlowFeatures.push(OBASEwpt);
+        var EAGUL61 = new ol.geom.LineString();
+        var EAGUL62 = new ol.geom.LineString();
+        var EAGUL63 = new ol.geom.LineString();
+        EAGUL61.appendCoordinate(ol.proj.transform(ZUNvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL61.appendCoordinate(ol.proj.transform(SLIDRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL61.appendCoordinate(ol.proj.transform(PAYSOwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL61.appendCoordinate(ol.proj.transform(EAGULwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL61.appendCoordinate(ol.proj.transform(HOMRRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL61.appendCoordinate(ol.proj.transform(DERVLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL62.appendCoordinate(ol.proj.transform(ZUNvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL62.appendCoordinate(ol.proj.transform(SLIDRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL62.appendCoordinate(ol.proj.transform(PAYSOwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL62.appendCoordinate(ol.proj.transform(EAGULwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL62.appendCoordinate(ol.proj.transform(HOMRRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL62.appendCoordinate(ol.proj.transform(QUENYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL62.appendCoordinate(ol.proj.transform(HINEYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL62.appendCoordinate(ol.proj.transform(OBASEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL63.appendCoordinate(ol.proj.transform(INWvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        EAGUL63.appendCoordinate(ol.proj.transform(EAGULwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var EAGUL61ln = setpathFunction(EAGUL61, STARStyle);
+        var EAGUL62ln = setpathFunction(EAGUL62, STARStyle);
+        var EAGUL63ln = setpathFunction(EAGUL63, STARStyle);
+        WestFlowFeatures.push(EAGUL61ln);
+        WestFlowFeatures.push(EAGUL63ln);
+        EastFlowFeatures.push(EAGUL62ln);
+        EastFlowFeatures.push(EAGUL63ln);
+
+ 
+        // KPHX BRUSR1 arrival
+        var BRUSRwpt = setwaypointFunction("BRUSR", 34.087, -112.136,24,0,"1");
+        var DRAKEwpt = setwaypointFunction("DRAKE", 34.71, -112.48);
+        var DUTEYwpt = setwaypointFunction("DUTEY", 34.86, -112.32);
+        var MAIERwpt = setwaypointFunction("MAIER", 34.447, -112.23);
+        var BDWILwpt = setwaypointFunction("BDWIL", 33.91, -112.157);
+        var TLMANwpt = setwaypointFunction("TLMAN", 33.46, -112.252); 
+        var KUCOOwpt = setwaypointFunction("KUCOO", 33.528, -111.91); 
+        var JURAZwpt = setwaypointFunction("JURAZ", 33.527, -111.85); 
+        EastFlowFeatures.push(DRAKEwpt);
+        EastFlowFeatures.push(DUTEYwpt);
+        EastFlowFeatures.push(MAIERwpt);
+        EastFlowFeatures.push(BRUSRwpt);
+        EastFlowFeatures.push(BDWILwpt);
+        EastFlowFeatures.push(TLMANwpt);
+        WestFlowFeatures.push(DRAKEwpt);
+        WestFlowFeatures.push(DUTEYwpt);
+        WestFlowFeatures.push(MAIERwpt);
+        WestFlowFeatures.push(BRUSRwpt);
+        WestFlowFeatures.push(KUCOOwpt);
+        WestFlowFeatures.push(JURAZwpt);
+        var BRUSR11 = new ol.geom.LineString();
+        var BRUSR12 = new ol.geom.LineString();
+        var BRUSR13 = new ol.geom.LineString();
+        BRUSR11.appendCoordinate(ol.proj.transform(DRAKEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR11.appendCoordinate(ol.proj.transform(MAIERwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR11.appendCoordinate(ol.proj.transform(BRUSRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR11.appendCoordinate(ol.proj.transform(BDWILwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR11.appendCoordinate(ol.proj.transform(TLMANwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR12.appendCoordinate(ol.proj.transform(DUTEYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR12.appendCoordinate(ol.proj.transform(MAIERwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR13.appendCoordinate(ol.proj.transform(DRAKEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR13.appendCoordinate(ol.proj.transform(MAIERwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR13.appendCoordinate(ol.proj.transform(BRUSRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR13.appendCoordinate(ol.proj.transform(KUCOOwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        BRUSR13.appendCoordinate(ol.proj.transform(JURAZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var BRUSR11ln = setpathFunction(BRUSR11, STARStyle);
+        var BRUSR12ln = setpathFunction(BRUSR12, STARStyle);
+        var BRUSR13ln = setpathFunction(BRUSR13, STARStyle);
+        EastFlowFeatures.push(BRUSR11ln);
+        EastFlowFeatures.push(BRUSR12ln);
+        WestFlowFeatures.push(BRUSR12ln);
+        WestFlowFeatures.push(BRUSR13ln);
+
+        // KPHX HYDRR1 Arrival
+        var HYDRRwpt = setwaypointFunction("HYDRR", 33.275, -113.07,18,10,"1");
+        var HOGGZwpt = setwaypointFunction("HOGGZ", 32.76, -114.062);
+        var SPINKwpt = setwaypointFunction("SPINK", 33.34, -113.947);
+        var SWOONwpt = setwaypointFunction("SWOON", 33.28, -113.24);
+        var SALOMwpt = setwaypointFunction("SALOM", 33.517, -113.88);
+        var MHAVIwpt = setwaypointFunction("MHAVI", 33.373, -113.45);
+        var GEELAwpt = setwaypointFunction("GEELA", 33.28, -112.822);
+        var TEICHwpt = setwaypointFunction("TEICH", 33.41, -112.50);
+        var TESLEwpt = setwaypointFunction("TESLE", 33.428, -112.425);
+        var CAGORwpt = setwaypointFunction("CAGOR", 33.428, -112.283);
+        var CHAVOwpt = setwaypointFunction("CHAVO", 33.348, -112.093);
+        var LEMOEwpt = setwaypointFunction("LEMOE", 33.345, -111.937);
+        EastFlowFeatures.push(HOGGZwpt);
+        EastFlowFeatures.push(JUDTHwpt);
+        EastFlowFeatures.push(HYDRRwpt);
+        EastFlowFeatures.push(SPINKwpt);
+        EastFlowFeatures.push(SWOONwpt);
+        EastFlowFeatures.push(SALOMwpt);
+        EastFlowFeatures.push(MHAVIwpt);
+        EastFlowFeatures.push(GEELAwpt);
+        EastFlowFeatures.push(TESLEwpt);
+        EastFlowFeatures.push(CAGORwpt);
+        WestFlowFeatures.push(HOGGZwpt);
+        WestFlowFeatures.push(JUDTHwpt);
+        WestFlowFeatures.push(HYDRRwpt);
+        WestFlowFeatures.push(SPINKwpt);
+        WestFlowFeatures.push(SWOONwpt);
+        WestFlowFeatures.push(SALOMwpt);
+        WestFlowFeatures.push(MHAVIwpt);
+        WestFlowFeatures.push(GEELAwpt);
+        WestFlowFeatures.push(CHAVOwpt);
+        WestFlowFeatures.push(LEMOEwpt);
+        var HYDRR11 = new ol.geom.LineString();
+        var HYDRR12 = new ol.geom.LineString();
+        var HYDRR13 = new ol.geom.LineString();
+        var HYDRR14 = new ol.geom.LineString();
+        var HYDRR15 = new ol.geom.LineString();
+        var HYDRR16 = new ol.geom.LineString();
+        HYDRR11.appendCoordinate(ol.proj.transform(HOGGZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR11.appendCoordinate(ol.proj.transform(JUDTHwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR11.appendCoordinate(ol.proj.transform(HYDRRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR12.appendCoordinate(ol.proj.transform(SPINKwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR12.appendCoordinate(ol.proj.transform(SWOONwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR12.appendCoordinate(ol.proj.transform(HYDRRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR13.appendCoordinate(ol.proj.transform(SALOMwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR13.appendCoordinate(ol.proj.transform(MHAVIwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR13.appendCoordinate(ol.proj.transform(SWOONwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR14.appendCoordinate(ol.proj.transform(SWOONwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR14.appendCoordinate(ol.proj.transform(HYDRRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR14.appendCoordinate(ol.proj.transform(GEELAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR15.appendCoordinate(ol.proj.transform(GEELAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR15.appendCoordinate(ol.proj.transform(TESLEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR15.appendCoordinate(ol.proj.transform(CAGORwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR16.appendCoordinate(ol.proj.transform(GEELAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR16.appendCoordinate(ol.proj.transform(CHAVOwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        HYDRR16.appendCoordinate(ol.proj.transform(LEMOEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var HYDRR11ln = setpathFunction(HYDRR11, STARStyle);
+        var HYDRR12ln = setpathFunction(HYDRR12, STARStyle);
+        var HYDRR13ln = setpathFunction(HYDRR13, STARStyle);
+        var HYDRR14ln = setpathFunction(HYDRR14, STARStyle);
+        var HYDRR15ln = setpathFunction(HYDRR15, STARStyle);
+        var HYDRR16ln = setpathFunction(HYDRR16, STARStyle);
+        EastFlowFeatures.push(HYDRR11ln);
+        EastFlowFeatures.push(HYDRR12ln);
+        EastFlowFeatures.push(HYDRR13ln);
+        EastFlowFeatures.push(HYDRR14ln);
+        EastFlowFeatures.push(HYDRR15ln);
+        WestFlowFeatures.push(HYDRR11ln);
+        WestFlowFeatures.push(HYDRR12ln);
+        WestFlowFeatures.push(HYDRR13ln);
+        WestFlowFeatures.push(HYDRR14ln);
+        WestFlowFeatures.push(HYDRR16ln);
+
+        // KPHX PINNG1 Arrival
+        var PINNGwpt = setwaypointFunction("PINNG", 32.74, -111.19,-24,4,"1");
+        var DRRVRwpt = setwaypointFunction("DRRVR", 32.175, -109.29);
+        var BNNKRwpt = setwaypointFunction("BNNKR", 32.468, -110.71);
+        var BRDEYwpt = setwaypointFunction("BRDEY", 32.912, -111.488);
+        var FINAPwpt = setwaypointFunction("FINAP", 33.403, -111.747);
+        var LGACYwpt = setwaypointFunction("LGACY", 33.305, -112.078);
+        var VISTLwpt = setwaypointFunction("VISTL", 33.341, -112.177);
+        var NEELEwpt = setwaypointFunction("NEELE", 33.342, -112.357);
+        EastFlowFeatures.push(DRRVRwpt);
+        EastFlowFeatures.push(BNNKRwpt);
+        EastFlowFeatures.push(PINNGwpt);
+        EastFlowFeatures.push(BRDEYwpt);
+        EastFlowFeatures.push(LGACYwpt);
+        EastFlowFeatures.push(VISTLwpt);
+        EastFlowFeatures.push(NEELEwpt);
+        WestFlowFeatures.push(DRRVRwpt);
+        WestFlowFeatures.push(BNNKRwpt);
+        WestFlowFeatures.push(PINNGwpt);
+        WestFlowFeatures.push(BRDEYwpt);
+        WestFlowFeatures.push(FINAPwpt);
+        var PINNG11 = new ol.geom.LineString();
+        var PINNG12 = new ol.geom.LineString();
+        var PINNG13 = new ol.geom.LineString();
+        PINNG11.appendCoordinate(ol.proj.transform(DRRVRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        PINNG11.appendCoordinate(ol.proj.transform(BNNKRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        PINNG11.appendCoordinate(ol.proj.transform(PINNGwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        PINNG11.appendCoordinate(ol.proj.transform(BRDEYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        PINNG12.appendCoordinate(ol.proj.transform(BRDEYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        PINNG12.appendCoordinate(ol.proj.transform(FINAPwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        PINNG13.appendCoordinate(ol.proj.transform(BRDEYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        PINNG13.appendCoordinate(ol.proj.transform(LGACYwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        PINNG13.appendCoordinate(ol.proj.transform(VISTLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        PINNG13.appendCoordinate(ol.proj.transform(NEELEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var PINNG11ln = setpathFunction(PINNG11, STARStyle);
+        var PINNG12ln = setpathFunction(PINNG12, STARStyle);
+        var PINNG13ln = setpathFunction(PINNG13, STARStyle);
+        EastFlowFeatures.push(PINNG11ln);
+        EastFlowFeatures.push(PINNG13ln);
+        WestFlowFeatures.push(PINNG11ln);
+        WestFlowFeatures.push(PINNG12ln);
+
+         // Phoenix area approaches
+        var BANYOwpt = setwaypointFunction("BANYO", 33.841, -112.075);
+        var AVENTwpt = setwaypointFunction("AVENT", 33.691, -112.036);
+        var AZCAFwpt = setwaypointFunction("AZCAF", 33.618, -111.915);
+        var AZNUPwpt = setwaypointFunction("AZNUP", 33.814, -112.312);
+        var BOLESwpt = setwaypointFunction("BOLES", 33.674, -112.3);
+        var ONEKEwpt = setwaypointFunction("ONEKE", 33.462, -111.729);
+        var CIPLUwpt = setwaypointFunction("CIPLU", 33.705, -111.76);
+        var BAPPAwpt = setwaypointFunction("BAPPA", 33.706, -112.192);
+        var SAENTwpt = setwaypointFunction("SAENT", 33.60, -111.892);
+        var SIZVUwpt = setwaypointFunction("SIZVU", 33.231, -112.05);
+        var DECTUwpt = setwaypointFunction("DECTU", 33.156, -111.971);
+        var NISIWwpt = setwaypointFunction("NISIW", 33.084, -111.904);
+        var AUX1INITwpt = setwaypointFunction("AUX1INIT", 33.779, -112.661);
+        var MOBFAFwpt = setwaypointFunction("MOBFAF", 33.131, -112.356);
+        var RW07Rwpt = setwaypointFunction("RW07R", 33.687, -112.093);
+        var RW25Lwpt = setwaypointFunction("RW25L", 33.688, -112.072);
+        var RW19wpt = setwaypointFunction("RW19", 33.533, -112.291);
+        var RW11wpt = setwaypointFunction("RW11", 33.719, -112.539);
+        var RW05wpt = setwaypointFunction("RW05", 32.951, -111.774);
+        var RW09wpt = setwaypointFunction("RW09", 33.113, -112.276);
+        var RW04Rwpt = setwaypointFunction("RW04R", 33.2657, -111.814);
+
+        // KFFZ RNAV-B Approach
+        ApproachFeatures.push(BANYOwpt);
+        ApproachFeatures.push(AVENTwpt);
+        ApproachFeatures.push(AZCAFwpt);
+        ApproachFeatures.push(ONEKEwpt);
+        var FFZRNAVB = new ol.geom.LineString();
+        FFZRNAVB.appendCoordinate(ol.proj.transform(BANYOwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FFZRNAVB.appendCoordinate(ol.proj.transform(AVENTwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FFZRNAVB.appendCoordinate(ol.proj.transform(AZCAFwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        FFZRNAVB.appendCoordinate(ol.proj.transform(ONEKEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var FFZRNAVBln = setpathFunction(FFZRNAVB, APPRStyle);
+        ApproachFeatures.push(FFZRNAVBln);
+
+        // KDVT RNAV 07R Approach
+        ApproachFeatures.push(AZNUPwpt);
+        ApproachFeatures.push(BOLESwpt);
+        ApproachFeatures.push(RW07Rwpt);
+        var DVTR07R = new ol.geom.LineString();
+        DVTR07R.appendCoordinate(ol.proj.transform(AZNUPwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        DVTR07R.appendCoordinate(ol.proj.transform(BOLESwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        DVTR07R.appendCoordinate(ol.proj.transform(RW07Rwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var DVTR07Rln = setpathFunction(DVTR07R, APPRStyle);
+        ApproachFeatures.push(DVTR07Rln);
+
+        // KDVT RNAV 25L Approach
+        ApproachFeatures.push(CIPLUwpt);
+        ApproachFeatures.push(RW25Lwpt);
+        var DVTR25L = new ol.geom.LineString();
+        DVTR25L.appendCoordinate(ol.proj.transform(CIPLUwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        DVTR25L.appendCoordinate(ol.proj.transform(RW25Lwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var DVTR25Lln = setpathFunction(DVTR25L, APPRStyle);
+        ApproachFeatures.push(DVTR25Lln);
+
+         // KGEU RNAV 19 Approach
+        ApproachFeatures.push(BAPPAwpt);
+        ApproachFeatures.push(RW19wpt);
+        var GEUR19 = new ol.geom.LineString();
+        GEUR19.appendCoordinate(ol.proj.transform(AVENTwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        GEUR19.appendCoordinate(ol.proj.transform(BAPPAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        GEUR19.appendCoordinate(ol.proj.transform(RW19wpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var GEUR19ln = setpathFunction(GEUR19, APPRStyle);
+        ApproachFeatures.push(GEUR19ln);
+
+        // KGYR RNAV 3 Approach
+
+
+        // KCHD RNAV 4L Approach
+        ApproachFeatures.push(RW04Rwpt);
+        ApproachFeatures.push(SIZVUwpt);
+        ApproachFeatures.push(DECTUwpt);
+        ApproachFeatures.push(NISIWwpt);
+        var CHDR04RT = new ol.geom.LineString();
+        var CHDR04R = new ol.geom.LineString();
+        CHDR04RT.appendCoordinate(ol.proj.transform(SIZVUwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        CHDR04RT.appendCoordinate(ol.proj.transform(NISIWwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        CHDR04R.appendCoordinate(ol.proj.transform(DECTUwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        CHDR04R.appendCoordinate(ol.proj.transform(RW04Rwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var CHDR04RTln = setpathFunction(CHDR04RT, APPRStyle);
+        var CHDR04Rln = setpathFunction(CHDR04R, APPRStyle);
+        ApproachFeatures.push(CHDR04RTln);
+        ApproachFeatures.push(CHDR04Rln);
+
+        // KCGZ ILS 5 Approach
+        ApproachFeatures.push(TFDvor);
+        ApproachFeatures.push(RW05wpt);
+        var CGZI05 = new ol.geom.LineString();
+        CGZI05.appendCoordinate(ol.proj.transform(TFDvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        CGZI05.appendCoordinate(ol.proj.transform(RW05wpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var CGZI05ln = setpathFunction(CGZI05, APPRStyle);
+        ApproachFeatures.push(CGZI05ln);
+
+        // AUX1 ILS 11 Approach
+        ApproachFeatures.push(AUX1INITwpt);
+        ApproachFeatures.push(RW11wpt);
+        var AUX1 = new ol.geom.LineString();
+        AUX1.appendCoordinate(ol.proj.transform(AUX1INITwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        AUX1.appendCoordinate(ol.proj.transform(RW11wpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var AUX1ln = setpathFunction(AUX1, APPRStyle);
+        ApproachFeatures.push(AUX1ln);
+
+        // Mobile ILS 09 Approach
+        ApproachFeatures.push(MOBFAFwpt);
+        ApproachFeatures.push(RW09wpt);
+        var MOBILS = new ol.geom.LineString();
+        MOBILS.appendCoordinate(ol.proj.transform(MOBFAFwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        MOBILS.appendCoordinate(ol.proj.transform(RW09wpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var MOBFACln = setpathFunction(MOBILS, APPRStyle);
+        ApproachFeatures.push(MOBFACln);
+
+
+        // KSDL RNAV D Approach
+
+
+        // KSDL VOR C Approach
+        ApproachFeatures.push(SAENTwpt);
+        var SDLRD = new ol.geom.LineString();
+        SDLRD.appendCoordinate(ol.proj.transform(IWAvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        SDLRD.appendCoordinate(ol.proj.transform(SAENTwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+        var SDLRDln = setpathFunction(SDLRD, APPRStyle);
+        ApproachFeatures.push(SDLRDln);
+
+        // KSDL RNP 3 Approach
+
+
+        // KSDL RNP 21 Approach
+
+        // Read the specialty icon JSON files and populate the appropriate arrays
+        getSpecialtyIconData();
+
+        // Some switch initializations for startup
+        $('#emitter_checkbox').addClass('settingsCheckboxChecked');  //Turn on emitter airplane symbols as the default display option
+        //Initialize PHX flow switch to west flow
+        $('#flowToggle').removeClass('settingsCheckboxChecked');
+        $('#kphx_west_flow_checkbox').addClass('settingsCheckboxChecked');
+        $('#kphx_east_flow_checkbox').removeClass('settingsCheckboxChecked');
+        ol.control.LayerSwitcher.forEachRecursive(layers, function(lyr) {
+        if (lyr.get('name') === 'kphx_proc_west') {
+            lyr.setVisible(true);
+            }
+        })
+        ol.control.LayerSwitcher.forEachRecursive(layers, function(lyr) {
+            if (lyr.get('name') === 'kphx_proc_east') {
+            lyr.setVisible(false);
+            }
+        })
+
+    
+//End CJS Add
 
         // Add terrain-limit rings. To enable this:
         //
@@ -927,6 +2044,10 @@ function refreshSelected() {
         	$('#selected_source').text("ADS-B");
         } else if (selected.getDataSource() === "tisb_trackfile" || selected.getDataSource() === "tisb_icao" || selected.getDataSource() === "tisb_other") {
         	$('#selected_source').text("TIS-B");
+//Start CJS Add
+        } else if (selected.getDataSource() === "adsr_icao_nt" || selected.getDataSource() === "adsr_icao" || selected.getDataSource() === "adsr_other") {
+        	$('#selected_source').text("Rebr");
+//End CJS Add
         } else if (selected.getDataSource() === "mlat") {
         	$('#selected_source').text("MLAT");
         } else {
@@ -1015,6 +2136,10 @@ function refreshTableInfo() {
         	classes += " vPosition";
         } else if (tableplane.getDataSource() === "tisb_trackfile" || tableplane.getDataSource() === "tisb_icao" || tableplane.getDataSource() === "tisb_other") {
         	classes += " tisb";
+//Start CJS Add
+        } else if (tableplane.getDataSource() === "adsr_icao_nt" || tableplane.getDataSource() === "adsr_icao" || tableplane.getDataSource() === "adsr_other") {
+        	classes += " adsr";
+//End CJS Add
         } else if (tableplane.getDataSource() === "mlat") {
         	classes += " mlat";
         } else {
@@ -1100,7 +2225,43 @@ function sortByCountry()  { sortBy('country', compareAlpha,   function(x) { retu
 function sortByRssi()     { sortBy('rssi',    compareNumeric, function(x) { return x.rssi }); }
 function sortByLatitude()   { sortBy('lat',   compareNumeric, function(x) { return (x.position !== null ? x.position[1] : null) }); }
 function sortByLongitude()  { sortBy('lon',   compareNumeric, function(x) { return (x.position !== null ? x.position[0] : null) }); }
-function sortByDataSource() { sortBy('data_source',     compareAlpha, function(x) { return x.getDataSource() } ); }
+
+//Start CJS Add
+function assignSourceSortNum(sourceType) {
+    //Sort order: ADSR, TISB, Mode A, ADSB-NT, ADSB, MLAT, mode-S
+       switch (sourceType) {
+		case 'mlat':
+			return 12;
+		case 'adsb_icao':
+		case 'adsb_other':
+			return 10;
+		case 'adsb_icao_nt':
+			return 8;
+		case 'adsr_icao':
+		case 'adsr_other':
+			return 2;
+		case 'tisb_icao':
+		case 'tisb_trackfile':
+		case 'tisb_other':
+			return 4;
+		case 'mode_s':
+			return 14;
+		case 'mode_ac':
+			return 6;
+	}
+    return 16;
+}
+function compareSource(xf,yf) {
+    var xf_num = assignSourceSortNum(xf);
+    var yf_num = assignSourceSortNum(yf);
+    
+    if (Math.abs(xf_num - yf_num) < 1e-9)
+        return 0;
+
+    return xf_num - yf_num;
+}
+function sortByDataSource() { sortBy('addrtype',     compareSource, function(x) { return x.getDataSource(); });}
+//End CJS Add
 
 var sortId = '';
 var sortCompare = null;
@@ -1141,7 +2302,7 @@ function resortTable() {
 }
 
 function sortBy(id,sc,se) {
-		if (id !== 'data_source') {
+		if (id !== 'addrtype') {
 			$('#grouptype_checkbox').removeClass('settingsCheckboxChecked');
 		} else {
 			$('#grouptype_checkbox').addClass('settingsCheckboxChecked');
@@ -1300,6 +2461,12 @@ function resetMap() {
 	OLMap.getView().setCenter(ol.proj.fromLonLat([CenterLon, CenterLat]));
 	
 	selectPlaneByHex(null,false);
+
+//Start CJS Add
+        clearSpecialtyIconData();
+        getSpecialtyIconData();
+ //End CJS Add
+
 }
 
 function updateMapSize() {
@@ -1359,10 +2526,12 @@ function setColumnVisibility() {
     showColumn(infoTable, "#registration", !mapIsVisible);
     showColumn(infoTable, "#aircraft_type", !mapIsVisible);   
     showColumn(infoTable, "#vert_rate", !mapIsVisible);
+    showColumn(infoTable, "#flag", !mapIsVisible);
     showColumn(infoTable, "#rssi", !mapIsVisible);
     showColumn(infoTable, "#lat", !mapIsVisible);
     showColumn(infoTable, "#lon", !mapIsVisible);
-    showColumn(infoTable, "#data_source", !mapIsVisible);
+    showColumn(infoTable, "#squawk", !mapIsVisible);
+    showColumn(infoTable, "#msgs", !mapIsVisible);
     showColumn(infoTable, "#airframes_mode_s_link", !mapIsVisible);
     showColumn(infoTable, "#flightaware_mode_s_link", !mapIsVisible);
     showColumn(infoTable, "#flightaware_photo_link", !mapIsVisible);
