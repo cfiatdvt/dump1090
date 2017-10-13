@@ -207,20 +207,24 @@ function format_data_source(source) {
 			return "MLAT";
 		case 'adsb_icao':
 		case 'adsb_other':
-			return "ADS-B";
+			return "ADSB";
 		case 'adsb_icao_nt':
-			return "ADS-B (non transponder)";
+			return "ADSB !Xp";
 		case 'adsr_icao':
 		case 'adsr_other':
-			return "ADS-R";
+//Start CJS Add
+			return "Rebr";
+		case 'adsr_icao_nt':
+                        return "Rebr !Xp";
+//End CJS Add
 		case 'tisb_icao':
 		case 'tisb_trackfile':
 		case 'tisb_other':
-			return "TIS-B";
+			return "TISB";
 		case 'mode_s':
-			return "Mode S";
+			return "No LL";
 		case 'mode_ac':
-			return "Mode A/C";
+			return "Mode A";
 	}
 
 	return "";
