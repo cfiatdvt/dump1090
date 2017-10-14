@@ -232,7 +232,7 @@ function getSpecialtyIconData()
 // List of airplanes of interest, stored in a JSON file.  Symb parameter dictates what SVG symbol to display
   $.ajax({
     async: true,
-    url: 'data/PlanesOfInterest.json',
+    url: 'db/PlanesOfInterest.json',
     data: "",
     cache: false,
     accepts:'application/json',
