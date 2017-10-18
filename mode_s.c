@@ -833,6 +833,10 @@ static void decodeESAirborneVelocity(struct modesMessage *mm, int check_imf)
         mm->vert_rate_valid = 1;
     }
 
+//Start CJS add
+    mm->opstatus.cc_nac_v = getbits(me, 11, 13);
+// End CJS add
+
     mm->vert_rate_source = (getbit(me, 36) ? ALTITUDE_GNSS : ALTITUDE_BARO);
 
     switch (mm->mesub) {

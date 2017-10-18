@@ -155,6 +155,15 @@ struct aircraft {
     unsigned char fatsv_emitted_es_target[7];     //      -"-         ES target status message
     unsigned char fatsv_emitted_es_acas_ra[7];    //      -"-         ES ACAS RA report message
 
+//Start CJS add
+    data_validity opstatus_valid;
+    unsigned      version;
+    unsigned      es_in;
+    unsigned      uat_in;
+    unsigned      nac_p;
+    unsigned      nac_v;
+//End CJS add
+
     uint64_t      fatsv_last_emitted;             // time (millis) aircraft was last FA emitted
 
     struct aircraft *next;        // Next aircraft in our linked list

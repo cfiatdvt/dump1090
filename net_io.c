@@ -1184,8 +1184,16 @@ char *generateAircraftJson(const char *url_path, int *len) {
         if (trackDataValid(&a->category_valid))
             p += snprintf(p, end-p, ",\"category\":\"%02X\"", a->category);
 //Start CJS Add
-        if (trackDataValid(&a->opstatus.valid))
-            p += snprintf(p, end-p, ",\"incat\":\"%02X\"", a->opstatus.cc_1090_in & opstatus.cc_uat_in);
+        if (a->version == 1) {
+            p += snprintf(p, end-p, ",\"ver\":\"%u\"", a->version );
+        }
+        if (a->version == 2) {
+            p += snprintf(p, end-p, ",\"in10\":\"%u\"", a->es_in );
+            p += snprintf(p, end-p, ",\"in9\":\"%u\"", a->uat_in );
+            p += snprintf(p, end-p, ",\"ver\":\"%u\"", a->version );
+            p += snprintf(p, end-p, ",\"nacp\":\"%u\"", a->nac_p );
+            p += snprintf(p, end-p, ",\"nacv\":\"%u\"", a->nac_v );
+        }
 //End CJS Add
 
         p += snprintf(p, end-p, ",\"mlat\":");

@@ -607,6 +607,16 @@ struct aircraft *trackUpdateFromMessage(struct modesMessage *mm)
         memcpy(a->callsign, mm->callsign, sizeof(a->callsign));
     }
 
+//Start CJS add
+    if (mm->opstatus.valid && accept_data(&a->opstatus_valid, mm->source, now)) {
+        a->version = mm->opstatus.version;
+        a->es_in = mm->opstatus.cc_1090_in;
+        a->uat_in = mm->opstatus.cc_uat_in;
+        a->nac_p = mm->opstatus.nac_p;
+        a->nac_v = mm->opstatus.cc_nac_v;
+    }
+//End CJS add
+
     // CPR, even
     if (mm->cpr_valid && !mm->cpr_odd && accept_data(&a->cpr_even_valid, mm->source, now)) {
         a->cpr_even_type = mm->cpr_type;
