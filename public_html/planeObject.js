@@ -53,6 +53,14 @@ function PlaneObject(icao) {
         this.typeDescription = null;
         this.wtc = null;
 
+//Start CJS Add
+        this.version = null;
+        this.in10 = null;
+        this.in9 = null;
+        this.nacp = null;
+        this.nacv = null;
+//End CJS Add
+    
         // request metadata
         getAircraftData(this.icao).done(function(data) {
                 if ("r" in data) {
@@ -353,12 +361,18 @@ PlaneObject.prototype.updateIcon = function() {
         var opacity = 1.0;
         var outline = (this.position_from_mlat ? OutlineMlatColor : OutlineADSBColor);
         var add_stroke = (this.selected && !SelectedAllPlanes) ? ' stroke="black" stroke-width="1px"' : '';
-        var baseMarker = getBaseMarker(this.category, this.icaotype, this.typeDescription, this.wtc, this.icao, this.speed, this.altitude);
-        var rottion = (this.track === null ? 0 : this.track);
+//Start CJS Add
+        // Emitter: an aircraft requesting TIS data on 1090.  
+        var emitter = (this.version == "2" && this.in10 == "1" && this.in9 == "0" && this.nacp > 4 && this.altitude < 18000 ? true : false)
+//End CJS Add
+//Start CJS Change
+        var baseMarker = getBaseMarker(this.category, this.icaotype, this.typeDescription, this.wtc, this.icao, this.speed, this.altitude, emitter);
+//End CJS Change
+        var rotation = (this.track === null ? 0 : this.track);
         //var transparentBorderWidth = (32 / baseMarker.scale / scaleFactor).toFixed(1);
 
         var svgKey = col + '!' + outline + '!' + baseMarker.svg + '!' + add_stroke + "!" + scaleFactor;
-        var styleKey = opacity + '!' + rottion;
+        var styleKey = opacity + '!' + rotation;
 
         if (this.markerStyle === null || this.markerIcon === null || this.markerSvgKey != svgKey) {
                 //console.log(this.icao + " new icon and style " + this.markerSvgKey + " -> " + svgKey);
@@ -370,7 +384,7 @@ PlaneObject.prototype.updateIcon = function() {
                         scale: 1.2 * scaleFactor,
                         imgSize: baseMarker.size,
                         src: svgPathToURI(baseMarker.svg, outline, col, add_stroke),
-                        rotation: (baseMarker.noRotate ? 0 : rottion * Math.PI / 180.0),
+                        rotation: (baseMarker.noRotate ? 0 : rotation * Math.PI / 180.0),
                         opacity: opacity,
                         rotateWithView: (baseMarker.noRotate ? false : true)
                 });
@@ -395,7 +409,7 @@ PlaneObject.prototype.updateIcon = function() {
                                 scale: 1.3,
                                 imgSize: [40, 40],
                                 src: "data:image/svg+xml;base64," + btoa(arrowPath),
-                                rotation: rottion * Math.PI / 180.0,
+                                rotation: rotation * Math.PI / 180.0,
                                 opacity: 1.0,
                                 rotateWithView: true
                         });
@@ -422,7 +436,7 @@ PlaneObject.prototype.updateIcon = function() {
 
         if (this.markerStyleKey != styleKey) {
                 //console.log(this.icao + " new rotation");
-                this.markerIcon.setRotation(rottion * Math.PI / 180.0);
+                this.markerIcon.setRotation(rotation * Math.PI / 180.0);
                 this.markerIcon.setOpacity(opacity);
                 if (this.staticIcon) {
                         this.staticIcon.setOpacity(opacity);
@@ -478,6 +492,21 @@ PlaneObject.prototype.updateData = function(receiver_timestamp, data) {
 		this.squawk	= data.squawk;
         if (typeof data.category !== "undefined")
                 this.category	= data.category;
+
+//Start CJS Add
+        if (typeof data.ver !== "undefined")
+                this.version	= data.ver;
+        if (typeof data.in10 !== "undefined")
+                this.in10	= data.in10;
+        if (typeof data.in9 !== "undefined")
+                this.in9	= data.in9;
+        if (typeof data.nacp !== "undefined")
+                this.nacp	= data.nacp;
+        if (typeof data.nacv !== "undefined")
+                this.nacv	= data.nacv;
+
+//End CJS Add
+    
 };
 
 PlaneObject.prototype.updateTick = function(receiver_timestamp, last_timestamp) {

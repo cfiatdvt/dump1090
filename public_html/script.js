@@ -1992,6 +1992,11 @@ function refreshSelected() {
         //         emerg.className = 'hidden';
         // }
 
+//Start CJS Add
+        $("#selected_version").text(selected.version);
+        $("#selected_incat").text(selected.in10+selected.in9);
+//End CJS Add
+    
         $("#selected_altitude").text(format_altitude_long(selected.altitude, selected.vert_rate, DisplayUnits));
 
         if (selected.squawk === null || selected.squawk === '0000') {

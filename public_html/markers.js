@@ -227,7 +227,8 @@ var TypeDesignatorIcons = {
         'B780': 'heavy_2e',
         'K35R': 'kc135_plane',
         'CAP': 'cap_plane',      //Civil Air Patrol AZ wing airplanes, identified by ICAO 
-        'EMI': 'emitter_plane',  //ADSB requesting TIS on 1090, identified by ICAO
+        'EMI': 'hi_perf',        //ADSB requesting TIS on 1090, identified by ICAO - From PlanesOfInterest.json
+        'EMT': 'emitter_plane',  //ADSB requesting TIS on 1090, identified by ICAO - From server data
         'FTR': 'fighter_jet',    //Fighters, dentified by high-speed/low-altitude combo
         'HGT': 'intel_plane',    //GJT (Intel) Shuttle fleet, identified by ICAO
         'PTA': 'piper_plane',    //Piper Turbo Arrows based in AZ, identified by ICAO
@@ -341,9 +342,15 @@ var CategoryIcons = {
         'C3' : 'ground_fixed'
 };
 
-function getBaseMarker(category, typeDesignator, typeDescription, wtc, icao, spd, alt) {
-
+//Start CJS Change
+function getBaseMarker(category, typeDesignator, typeDescription, wtc, icao, spd, alt, emitter) {
+//End CJS Change
 //Start CJS Add
+        if (emitter && $('#emitter_checkbox').hasClass('settingsCheckboxChecked'))
+                {
+                    return shapes[TypeDesignatorIcons["EMT"]];
+                }
+
         if (interestArrayICAO.includes(icao))
         {
             // Use to identify any airplanes of interest and forward the appropriate SVG symbol
