@@ -2178,7 +2178,19 @@ function refreshTableInfo() {
         tableplane.tr.cells[13].textContent = (tableplane.rssi !== null ? tableplane.rssi : "");
         tableplane.tr.cells[14].textContent = (tableplane.position !== null ? tableplane.position[1].toFixed(4) : "");
         tableplane.tr.cells[15].textContent = (tableplane.position !== null ? tableplane.position[0].toFixed(4) : "");
-        tableplane.tr.cells[16].textContent = format_data_source(tableplane.getDataSource());
+//Start CJS Add
+        var dataSource = format_data_source(tableplane.getDataSource());
+        if (dataSource == "ADSB") {
+            if (tableplane.version == "2") 
+                tableplane.tr.cells[16].textContent = "A2" + tableplane.in10 + tableplane.in9;
+            else if (tableplane.version == "1") 
+                tableplane.tr.cells[16].textContent = "A1SB";
+            else
+                tableplane.tr.cells[16].textContent = "A0SB"
+        } else { 
+            tableplane.tr.cells[16].textContent = dataSource;
+        }
+//End CJS Add
         tableplane.tr.cells[17].innerHTML = getAirframesModeSLink(tableplane.icao);
         tableplane.tr.cells[18].innerHTML = getFlightAwareModeSLink(tableplane.icao, tableplane.flight);
         tableplane.tr.cells[19].innerHTML = getFlightAwarePhotoLink(tableplane.registration);
