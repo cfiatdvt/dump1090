@@ -399,12 +399,12 @@ function getBaseMarker(category, typeDesignator, typeDescription, wtc, icao, spd
 
 //Start CJS Add
 
-        if ( (alt > 1150.0) && 
-            ((alt < 9000.0 && spd > 340.0) || 
+        if  ((alt < 9000.0 && spd > 340.0) || 
              (alt < 7000.0 && spd > 310.0) || 
              (alt < 5000.0 && spd > 280.0) ||
-             (alt < 3000.0 && spd > 240.0)
-           ) )  {
+             (alt < 3000.0 && spd > 240.0) ||
+             (alt < 2000.0 && spd > 190.0)
+            )  {
                // Low and fast; must be a fighter jet
                typeDescription = 'FTR';
                return shapes[TypeDescriptionIcons[typeDescription]];
