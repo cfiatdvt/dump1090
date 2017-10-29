@@ -215,6 +215,70 @@ function setvorFunction(wptname, wptlat, wptlon, xo, yo) {
     
     return tempwpt;
 }
+//Make ADSB transmitter style 
+function setADSBXmitFunction(wptname, wptlat, wptlon, xo, yo) {
+    var temppt = [wptlon, wptlat];
+    var tempwpt = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(temppt)));
+
+ //VOR SVG definition from: https://upload.wikimedia.org/wikipedia/commons/5/5f/Pictogram_VORTAC.svg
+    var asciipath = '<?xml version="1.0" encoding="iso-8859-1"?><svg verion="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="792px" height="792px" viewBox="0 0 792 720" stroke="#000" stroke-width="2"><path d="M403.69,330.253c-1.793-5.734-7.117-9.648-13.138-9.648c-6.021,0-11.345,3.914-13.138,9.648L239.315,774.221 c-1.3,4.16-0.534,8.69,2.067,12.193c2.586,3.504,6.706,5.584,11.071,5.584h276.198c0.096-0.014,0.191,0,0.273,0 c7.596,0,13.754-6.145,13.754-13.713c0-2.367-0.602-4.598-1.67-6.555L403.69,330.253z M271.12,764.572l119.432-383.97 l119.432,383.97H271.12z M397.97,243.078c34.131,0,61.898-27.699,61.898-61.735c0-34.035-27.768-61.721-61.898-61.721 c-34.131,0-61.899,27.686-61.899,61.721C336.071,215.378,363.838,243.078,397.97,243.078z M397.97,147.047 		c18.968,0,34.405,15.382,34.405,34.295s-15.438,34.31-34.405,34.31s-34.392-15.383-34.392-34.31 C363.578,162.43,379.002,147.047,397.97,147.047z M495.491,265.631c-6.527,3.873-8.662,12.29-4.775,18.79 c2.572,4.311,7.13,6.692,11.824,6.692c2.395,0,4.816-0.629,7.021-1.93c38.031-22.595,61.652-64.034,61.652-108.142 c0-44.642-24.059-86.328-62.774-108.812c-6.556-3.818-14.986-1.601-18.804,4.954c-3.818,6.542-1.602,14.944,4.968,18.749 c30.285,17.585,49.103,50.198,49.103,85.109C543.719, 215.543,525.23,247.963,495.491,265.631z M504.661,0.696 c-7.254-2.381-14.985,1.546-17.367,8.731c-2.381,7.199,1.547,14.944,8.759,17.312c66.922,21.979,111.864,84.001,111.864,154.303 c0,68.454-43.41,129.929-108.005,152.975c-7.157,2.559-10.866,10.401-8.307,17.531c2.012,5.611,7.294,9.101,12.946,9.101 c1.532,0,3.106-0.26,4.639-0.808c75.503-26.933,126.234-98.794,126.234-178.799C635.425,98.875,582.887,26.397,504.661,0.696z M297.396,95.946c6.569-3.805,8.786-12.208,4.968-18.749c-3.818-6.569-12.235-8.772-18.804-4.954 c-38.716,22.471-62.775,64.171-62.775,108.812c0,44.108,23.621,85.533,61.653,108.142c2.203,1.314,4.625,1.93,7.021,1.93 c4.68,0,9.251-2.395,11.824-6.692c3.887-6.5,1.751-14.917-4.776-18.79c-29.738-17.682-48.227-50.088-48.227-84.576 C248.279,146.144,267.097,113.532,297.396,95.946z M287.447,360.663c5.652,0,10.935-3.49,12.946-9.101 c2.559-7.13-1.164-14.985-8.307-17.531c-64.608-23.046-108.005-84.521-108.005-152.975c0-70.315,44.957-132.324,111.878-154.303 c7.212-2.368,11.126-10.127,8.759-17.312c-2.381-7.185-10.141-11.126-17.367-8.731 c-78.226,25.688-130.778,98.166-130.778,180.346c0,80.004,50.732,151.867,126.234,178.799 C284.34, 360.402,285.9,360.663,287.447,360.663z"/></svg>';  
+    var xmlpath = "data:image/svg+xml;base64," + btoa(asciipath);
+
+    var VOR = {
+        key : "ADSBXmit",
+        scale : 0.025,
+        size : [792, 792],
+        anchor : [380,700],
+        noRotate : true,
+        markerRadius: 60,
+        path: xmlpath
+    };
+
+    if (xo != null) 
+    {
+        tempwpt.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                        anchor: VOR.anchor,
+                        anchorXUnits: 'pixels',
+                        anchorYUnits: 'pixels',
+                        scale: VOR.scale,
+                        imgSize: VOR.size,
+                        src: VOR.path,
+                        rotation: 0,
+                        opacity: 1.0,
+                        rotateWithView: false
+                }),
+                text: new ol.style.Text({
+                        font: '7px Calibri,sans-serif',
+                        fill: new ol.style.Fill({ color: '#000' }),
+                        stroke: new ol.style.Stroke({
+                            color: '#fff', width: 2 }),
+                        offsetX: xo,
+                        offsetY: yo,
+                        text: wptname
+                       })
+
+            }) );
+    }  
+    else
+    {
+        tempwpt.setStyle(new ol.style.Style({
+                image: new ol.style.Icon({
+                        anchor: VOR.anchor,
+                        anchorXUnits: 'pixels',
+                        anchorYUnits: 'pixels',
+                        scale: VOR.scale,
+                        imgSize: VOR.size,
+                        src: VOR.path,
+                        rotation: 0,
+                        opacity: 1.0,
+                        rotateWithView: false
+                })
+        }) );
+    }
+    
+    return tempwpt;
+}
 
 
 // Set up line segments for each path 
@@ -1080,6 +1144,42 @@ function initialize_map() {
         NavaidFeatures.push(GFSvor);
         NavaidFeatures.push(PGAvor);
         NavaidFeatures.push(SVCvor);
+
+        // ADSB ground transmitters
+        var ADSBXmitAZ1 = setADSBXmitFunction("AZ1", 32.795, -113.546,2,8);
+        var ADSBXmitAZ2 = setADSBXmitFunction("AZ2", 32.549, -114.786,2,8);
+        var ADSBXmitAZ3 = setADSBXmitFunction("AZ3", 33.261, -111.338,2,8);
+        var ADSBXmitAZ4 = setADSBXmitFunction("AZ4", 32.249, -111.117,2,8);
+        var ADSBXmitAZ5 = setADSBXmitFunction("AZ5", 31.965, -110.368,2,8);
+        var ADSBXmitAZ6 = setADSBXmitFunction("AZ6", 34.431, -111.504,2,8);
+        var ADSBXmitAZ7 = setADSBXmitFunction("AZ7", 33.817, -112.515,2,8);
+        var ADSBXmitAZ8 = setADSBXmitFunction("AZ8", 35.402, -113.397,2,8);
+        var ADSBXmitAZ9 = setADSBXmitFunction("AZ9", 36.737, -112.213,2,8);
+        var ADSBXmitAZ11 = setADSBXmitFunction("AZ11", 35.218, -109.354,2,8);
+        var ADSBXmitAZ12 = setADSBXmitFunction("AZ12", 31.482, -109.959,2,8);
+        var ADSBXmitAZ13 = setADSBXmitFunction("AZ13", 32.351, -109.492,2,8);
+        var ADSBXmitCA3 = setADSBXmitFunction("CA3", 33.704, -114.218,2,8);
+        var ADSBXmitFFZ0 = setADSBXmitFunction("FFZ0", 33.457, -111.720,2,8);
+        var ADSBXmitINW0 = setADSBXmitFunction("INW0", 35.017, -110.714,2,8);
+        var ADSBXmitPHX0 = setADSBXmitFunction("PHX0", 33.426, -112.015,2,8);
+        var ADSBXmitPRC1 = setADSBXmitFunction("PRC1", 34.649, -112.430,2,8);
+        NavaidFeatures.push(ADSBXmitAZ1);
+        NavaidFeatures.push(ADSBXmitAZ2);
+        NavaidFeatures.push(ADSBXmitAZ3);
+        NavaidFeatures.push(ADSBXmitAZ4);
+        NavaidFeatures.push(ADSBXmitAZ5);
+        NavaidFeatures.push(ADSBXmitAZ6);
+        NavaidFeatures.push(ADSBXmitAZ7);
+        NavaidFeatures.push(ADSBXmitAZ8);
+        NavaidFeatures.push(ADSBXmitAZ9);
+        NavaidFeatures.push(ADSBXmitAZ11);
+        NavaidFeatures.push(ADSBXmitAZ12);
+        NavaidFeatures.push(ADSBXmitAZ13);
+        NavaidFeatures.push(ADSBXmitCA3);
+        NavaidFeatures.push(ADSBXmitFFZ0);
+        NavaidFeatures.push(ADSBXmitINW0);
+        NavaidFeatures.push(ADSBXmitPHX0);
+        NavaidFeatures.push(ADSBXmitPRC1);
 
         // Regional waypoints
         var TIRONwpt = setwaypointFunction("TIRON", 33.62, -112.92,14,0);
