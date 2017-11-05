@@ -2199,6 +2199,33 @@ function refreshHighlighted() {
 
 	$('#highlighted_icao').text(highlighted.icao.toUpperCase());
 
+//Start CJS Add
+    if (highlighted.getDataSource() === "adsb_icao") {
+        if (highlighted.version == "2") {
+            $('#highlighted_source').text("A" + highlighted.version + highlighted.in10 + highlighted.in9);
+         }else {
+             if (highlighted.version == "1") {
+                 $('#highlighted_source').text("A1");
+             }else {
+                $('#highlighted_source').text("A0");
+             }
+         }
+        } else if (highlighted.getDataSource() === "tisb_trackfile" || highlighted.getDataSource() === "tisb_icao" || highlighted.getDataSource() === "tisb_other") {
+        	$('#highlighted_source').text("TIS-B");
+        } else if (highlighted.getDataSource() === "adsr_icao_nt" || highlighted.getDataSource() === "adsr_icao" || highlighted.getDataSource() === "adsr_other") {
+        	$('#highlighted_source').text("Rebr");
+        } else if (highlighted.getDataSource() === "mlat") {
+        	$('#highlighted_source').text("MLAT");
+        } else {
+        	$('#highlighted_source').text("Other");
+        }
+        if (highlighted.seen <= 1) {
+                $('#highlighted_seen').text('now');
+        } else {
+                $('#highlighted_seen').text(highlighted.seen.toFixed(1) + 's');
+        }
+
+//End CJS Add
 }
 
 function refreshClock() {
