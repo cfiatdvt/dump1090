@@ -59,6 +59,7 @@ var EastFlowFeatures = new ol.Collection();
 var TransitionFeatures = new ol.Collection();
 var ApproachFeatures = new ol.Collection();
 var NavaidFeatures = new ol.Collection();
+var EmitCircleFeatures = new ol.Collection();
 
 var interestArrayICAO = [];
 var interestArrayN = [];
@@ -67,6 +68,7 @@ var interestArraychk = [];
 var interestArraytype = [];
 
 var interestAJAXObject = null;
+var iconNumericTag;
 
 //Make waypoint style with settable text label and x, y offsets
 function setwaypointFunction(wptname, wptlat, wptlon, xo, yo, suffix) {
@@ -541,17 +543,18 @@ function initialize() {
         	filterBlockedMLAT(true);
         	refreshSelected();
         	refreshHighlighted();
-        	refreshTableInfo();
+            refreshTableInfo();
         });
-
-        $('#grouptype_checkbox').on('click', function() {
-        	if ($('#grouptype_checkbox').hasClass('settingsCheckboxChecked')) {
-        		sortByDistance();
-        	} else {
-        		sortByDataSource();
-        	}
         	
-        });
+        $('#iconnumbtype_checkbox').on('click', function() {
+    	    if ($('#iconnumbtype_checkbox').hasClass('settingsCheckboxChecked')) {
+    		    iconNumericTag = false;
+  		 	    $('#iconnumbtype_checkbox').removeClass('settingsCheckboxChecked');
+    	    } else {
+    		    iconNumericTag = true;
+    			$('#iconnumbtype_checkbox').addClass('settingsCheckboxChecked');
+           }
+    	})
 
 //Start CJS Add
         $('#emitter_checkbox').on('click', function() {
@@ -822,7 +825,7 @@ function initialize_map() {
                                         features: StaticFeatures,
                                 })
                         }),
-
+                    
                         new ol.layer.Vector({
                                 name: 'ac_trail',
                                 type: 'overlay',
@@ -833,6 +836,15 @@ function initialize_map() {
                         }),
 
 //Start CJS Add
+                        new ol.layer.Vector({
+                                name: 'emit_pos',
+                                type: 'overlay',
+                                title: 'emitter extent diameters',
+                                source: new ol.source.Vector({
+                                        features: EmitCircleFeatures,
+                                })
+                        }),
+
                         new ol.layer.Vector({
                                 name: 'kphx_proc_west',
                                 type: 'overlay',
@@ -1311,13 +1323,13 @@ function initialize_map() {
         var SNOBL51 = new ol.geom.LineString();
         var SNOBL52 = new ol.geom.LineString();
         var SNOBL53 = new ol.geom.LineString();
-        var SNOBL54 = new ol.geom.LineString();
-        var SNOBL55 = new ol.geom.LineString();
+//        var SNOBL54 = new ol.geom.LineString();
+//        var SNOBL55 = new ol.geom.LineString();
         var YOTES51 = new ol.geom.LineString();
         var YOTES52 = new ol.geom.LineString();
         var YOTES53 = new ol.geom.LineString();
         var YOTES54 = new ol.geom.LineString();
-        var YOTES55 = new ol.geom.LineString();
+//        var YOTES55 = new ol.geom.LineString();
         var LALUZ51 = new ol.geom.LineString();
         var LALUZ52 = new ol.geom.LineString();
         var LALUZ53 = new ol.geom.LineString();
@@ -1345,10 +1357,10 @@ function initialize_map() {
         SNOBL53.appendCoordinate(ol.proj.transform(SNOBLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
         SNOBL53.appendCoordinate(ol.proj.transform(CARTLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
         SNOBL53.appendCoordinate(ol.proj.transform(GCNvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
-        SNOBL54.appendCoordinate(ol.proj.transform(CARTLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
-        SNOBL54.appendCoordinate(ol.proj.transform(YOOPRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
-        SNOBL55.appendCoordinate(ol.proj.transform(CARTLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
-        SNOBL55.appendCoordinate(ol.proj.transform(JARPAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+//        SNOBL54.appendCoordinate(ol.proj.transform(CARTLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+//        SNOBL54.appendCoordinate(ol.proj.transform(YOOPRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+//        SNOBL55.appendCoordinate(ol.proj.transform(CARTLwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+//        SNOBL55.appendCoordinate(ol.proj.transform(JARPAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
         YOTES51.appendCoordinate(ol.proj.transform(ZILUBwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
         YOTES51.appendCoordinate(ol.proj.transform(MRBILwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
         YOTES51.appendCoordinate(ol.proj.transform(YOTESwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
@@ -1360,8 +1372,8 @@ function initialize_map() {
         YOTES53.appendCoordinate(ol.proj.transform(YOOPRwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
         YOTES54.appendCoordinate(ol.proj.transform(YOTESwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
         YOTES54.appendCoordinate(ol.proj.transform(JARPAwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
-        YOTES55.appendCoordinate(ol.proj.transform(YOTESwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
-        YOTES55.appendCoordinate(ol.proj.transform(GCNvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+//        YOTES55.appendCoordinate(ol.proj.transform(YOTESwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
+//        YOTES55.appendCoordinate(ol.proj.transform(GCNvor.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
         LALUZ51.appendCoordinate(ol.proj.transform(ZILUBwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
         LALUZ51.appendCoordinate(ol.proj.transform(FORPEwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
         LALUZ51.appendCoordinate(ol.proj.transform(LALUZwpt.getGeometry().getCoordinates(), 'EPSG:3857', 'EPSG:4326'));
@@ -1378,13 +1390,13 @@ function initialize_map() {
         var SNOBL51ln = setpathFunction(SNOBL51, SIDStyle);
         var SNOBL52ln = setpathFunction(SNOBL52, SIDStyle);
         var SNOBL53ln = setpathFunction(SNOBL53, SIDStyle);
-        var SNOBL54ln = setpathFunction(SNOBL54, SIDStyle);
-        var SNOBL55ln = setpathFunction(SNOBL55, SIDStyle);
+//        var SNOBL54ln = setpathFunction(SNOBL54, SIDStyle);
+//        var SNOBL55ln = setpathFunction(SNOBL55, SIDStyle);
         var YOTES51ln = setpathFunction(YOTES51, SIDStyle);
         var YOTES52ln = setpathFunction(YOTES52, SIDStyle);
         var YOTES53ln = setpathFunction(YOTES53, SIDStyle);
         var YOTES54ln = setpathFunction(YOTES54, SIDStyle);
-        var YOTES55ln = setpathFunction(YOTES55, SIDStyle);
+//        var YOTES55ln = setpathFunction(YOTES55, SIDStyle);
         var LALUZ51ln = setpathFunction(LALUZ51, SIDStyle);
         var LALUZ52ln = setpathFunction(LALUZ52, SIDStyle);
         var LALUZ53ln = setpathFunction(LALUZ53, SIDStyle);
@@ -1397,13 +1409,13 @@ function initialize_map() {
         WestFlowFeatures.push(SNOBL51ln);
         EastFlowFeatures.push(SNOBL52ln);
         TransitionFeatures.push(SNOBL53ln);
-        TransitionFeatures.push(SNOBL54ln);
-        TransitionFeatures.push(SNOBL55ln);
+//        TransitionFeatures.push(SNOBL54ln);
+//        TransitionFeatures.push(SNOBL55ln);
         WestFlowFeatures.push(YOTES51ln);
         EastFlowFeatures.push(YOTES52ln);
         TransitionFeatures.push(YOTES53ln);
         TransitionFeatures.push(YOTES54ln);
-        TransitionFeatures.push(YOTES55ln);
+//        TransitionFeatures.push(YOTES55ln);
         WestFlowFeatures.push(LALUZ51ln);
         EastFlowFeatures.push(LALUZ52ln);
         TransitionFeatures.push(LALUZ53ln);
@@ -1870,7 +1882,9 @@ function initialize_map() {
         getSpecialtyIconData();
 
         // Some switch initializations for startup
-        $('#emitter_checkbox').addClass('settingsCheckboxChecked');  //Turn on emitter airplane symbols as the default display option
+        $('#emitter_checkbox').addClass('settingsCheckboxChecked');  //Default on for emitter symbols
+        iconNumericTag = true;
+    	$('#iconnumbtype_checkbox').addClass('settingsCheckboxChecked'); //Default on for Icon numbers
         //Initialize PHX flow switch to west flow
         $('#flowToggle').removeClass('settingsCheckboxChecked');
         $('#kphx_west_flow_checkbox').addClass('settingsCheckboxChecked');
@@ -2005,6 +2019,7 @@ function reaper() {
         refreshTableInfo();
         refreshSelected();
         refreshHighlighted();
+
 }
 
 // Page Title update function
@@ -2212,8 +2227,10 @@ function refreshHighlighted() {
          }
         } else if (highlighted.getDataSource() === "tisb_trackfile" || highlighted.getDataSource() === "tisb_icao" || highlighted.getDataSource() === "tisb_other") {
         	$('#highlighted_source').text("TIS-B");
-        } else if (highlighted.getDataSource() === "adsr_icao_nt" || highlighted.getDataSource() === "adsr_icao" || highlighted.getDataSource() === "adsr_other") {
-        	$('#highlighted_source').text("Rebr");
+        } else if (highlighted.getDataSource() === "adsr_icao") {
+            $('#highlighted_source').text("Re" + highlighted.in10 + highlighted.in9);
+        } else if (highlighted.getDataSource() === "adsr_icao_nt" || highlighted.getDataSource() === "adsr_other") {
+            $('#highlighted_source').text("Rebr");
         } else if (highlighted.getDataSource() === "mlat") {
         	$('#highlighted_source').text("MLAT");
         } else {
@@ -2315,8 +2332,15 @@ function refreshTableInfo() {
             else
                 tableplane.tr.cells[16].textContent = "A0SB"
         } else { 
-            tableplane.tr.cells[16].textContent = dataSource;
-        }
+            if (dataSource == "Rebr") {
+                if (tableplane.in10 == null) {
+                    tableplane.tr.cells[16].textContent = "Rebr";
+                } else { 
+                    tableplane.tr.cells[16].textContent = "Re" + tableplane.in10 + tableplane.in9;
+                }
+                } else { 
+                tableplane.tr.cells[16].textContent = dataSource;
+        }}
 //End CJS Add
         tableplane.tr.cells[17].innerHTML = getAirframesModeSLink(tableplane.icao);
         tableplane.tr.cells[18].innerHTML = getFlightAwareModeSLink(tableplane.icao, tableplane.flight);
@@ -2446,12 +2470,7 @@ function resortTable() {
 }
 
 function sortBy(id,sc,se) {
-		if (id !== 'addrtype') {
-			$('#grouptype_checkbox').removeClass('settingsCheckboxChecked');
-		} else {
-			$('#grouptype_checkbox').addClass('settingsCheckboxChecked');
-		}
-        if (id === sortId) {
+      if (id === sortId) {
                 sortAscending = !sortAscending;
                 PlanesOrdered.reverse(); // this correctly flips the order of rows that compare equal
         } else {

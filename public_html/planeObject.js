@@ -363,7 +363,7 @@ PlaneObject.prototype.updateIcon = function() {
         var add_stroke = (this.selected && !SelectedAllPlanes) ? ' stroke="black" stroke-width="1px"' : '';
 //Start CJS Add
         // Emitter: an aircraft requesting TIS data on 1090.  
-        var emitter = (this.version == "2" && this.in10 == "1" && this.in9 == "0" && this.nacp > 4 && this.altitude < 18000 ? true : false)
+        var emitter = (this.version == "2" && this.in10 == "1" && this.in9 == "0" && this.nacp > 4 && this.altitude < 24000 ? true : false)
 //End CJS Add
 //Start CJS Change
         var baseMarker = getBaseMarker(this.category, this.icaotype, this.typeDescription, this.wtc, this.icao, this.speed, this.altitude, emitter);
@@ -393,9 +393,21 @@ PlaneObject.prototype.updateIcon = function() {
 // Bring back no-rotate heading pointers
                 if (baseMarker.noRotate) {
                         // the base marker won't be rotated
+                        var labelText = '';
+                        if (iconNumericTag == true) {
+                            labelText     = (this.flight ? this.flight : registration_from_hexid(this.icao));
+                            labelText     = labelText + " " + (this.altitude ? parseInt(this.altitude/100) : '?');
+                        }
                         this.markerStaticIcon = icon;
                         this.markerStaticStyle = new ol.style.Style({
-                                image: this.markerStaticIcon
+                               image: this.markerStaticIcon,
+                               text: new ol.style.Text({
+                                    font: '7px Calibri, sans-serif',
+                                    stroke: new ol.style.Stroke({color: "fff", width: 0.1}),
+                                    offsetX: -2,
+                                    offsetY: +24,
+                                    text: labelText 
+                               })
                         });
 
                         // create an arrow that we will rotate around the base marker
@@ -416,13 +428,59 @@ PlaneObject.prototype.updateIcon = function() {
                         this.markerStyle = new ol.style.Style({
                                 image: this.markerIcon
                         });
+                    
+                        if (baseMarker.rangeRing) {
+                            // Dist ring for EMT
+                            EmitCircleFeatures.forEach(function(emitCircFeature) {
+                                if (emitCircFeature.ICAO == this.icao) {
+                                    EmitCircleFeatures.remove(emitCircFeature);
+                                }
+                            },this);
+                            var distance = 15 * 1852; //15 NM radius circle around TIS-requestor airplane
+                            var circle = make_geodesic_circle(this.position, distance, 360);
+                            circle.transform('EPSG:4326', 'EPSG:3857');
+                            var feature = new ol.Feature(circle);
+
+                            var circleStyle = function(distance) {
+    	                        return new ol.style.Style({
+                                    fill: null,
+                                    stroke: new ol.style.Stroke({
+                                        color: '#f04040',
+                                        width: 0.5
+                                    }),
+                                });
+                            };
+                    
+                            feature.setStyle(circleStyle(distance));
+                            feature.ICAO = this.icao;
+                            EmitCircleFeatures.push(feature);
+                        }
+
+
                 } else {
-                    this.markerIcon = icon;
-                    this.markerStyle = new ol.style.Style({
+                       this.markerIcon = icon;
+                       this.markerStaticIcon = null;
+                       this.markerStaticStyle = new ol.style.Style({});
+                       if (iconNumericTag == true) {  
+                             var labelText = '';
+                            labelText     = (this.flight ? this.flight : registration_from_hexid(this.icao));
+                            labelText     = labelText + " " + (this.altitude ? parseInt(this.altitude/100) : '?');
+                            // Numeric data for each icon
+                            this.markerStyle = new ol.style.Style({
+                                text: new ol.style.Text({
+                                    font: '7px Calibri, sans-serif',
+                                    stroke: new ol.style.Stroke({color: "fff", width: 0.1}),
+                                    offsetX: -2,
+                                    offsetY: +24,
+                                    text: labelText 
+                                }),
                             image: this.markerIcon
-                    });
-                    this.markerStaticIcon = null;
-                    this.markerStaticStyle = new ol.style.Style({});
+                            });
+                        } else {
+                            this.markerStyle = new ol.style.Style({
+                                image: this.markerIcon
+                            });
+                        }
                 }
 //End CJS Add
                 this.markerStyleKey = styleKey;
@@ -545,6 +603,16 @@ PlaneObject.prototype.clearMarker = function() {
                 PlaneIconFeatures.remove(this.markerStatic);
                 /* FIXME google.maps.event.clearListeners(this.marker, 'click'); */
                 this.marker = this.markerStatic = null;
+        
+// Start CJS Add
+        EmitCircleFeatures.forEach(function(emitCircFeature) {
+            if (emitCircFeature.ICAO == this.icao) {
+                EmitCircleFeatures.remove(emitCircFeature);
+            }
+        },this);
+// End CJS Add
+        
+        
 	}
 };
 
