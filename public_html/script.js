@@ -2007,6 +2007,13 @@ function reaper() {
                         // Reap it.                                
                         plane.tr.parentNode.removeChild(plane.tr);
                         plane.tr = null;
+// Start CJS Add
+                        EmitCircleFeatures.forEach(function(emitCircFeature) {
+                            if (emitCircFeature.ICAO == plane.icao) {
+                                EmitCircleFeatures.remove(emitCircFeature);
+                            }
+                        },this);
+// End CJS Add
                         delete Planes[plane.icao];
                         plane.destroy();
                 } else {
