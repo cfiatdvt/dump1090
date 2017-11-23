@@ -460,7 +460,19 @@ PlaneObject.prototype.updateIcon = function() {
                 } else {
                        this.markerIcon = icon;
                        this.markerStaticIcon = null;
-                       this.markerStaticStyle = new ol.style.Style({});
+                       if (this.addrtype == "adsr_icao" && $('#emitter_checkbox').hasClass('settingsCheckboxChecked')) {
+                           this.markerStaticStyle = new ol.style.Style({
+                               text: new ol.style.Text({
+                                    font: '20px Calibri, sans-serif',
+                                    stroke: new ol.style.Stroke({color: "#f00000", width: 3}),
+                                    offsetX: -2,
+                                    offsetY: -24,
+                                    text: "R" 
+                                })
+                           });
+                       } else {
+                           this.markerStaticStyle = new ol.style.Style({});
+                       }
                        if (iconNumericTag == true) {  
                              var labelText = '';
                             labelText     = (this.flight ? this.flight : registration_from_hexid(this.icao));
