@@ -839,7 +839,7 @@ function initialize_map() {
                         new ol.layer.Vector({
                                 name: 'emit_pos',
                                 type: 'overlay',
-                                title: 'emitter extent diameters',
+                                title: 'Emitter target extent',
                                 source: new ol.source.Vector({
                                         features: EmitCircleFeatures,
                                 })
@@ -1018,8 +1018,10 @@ function initialize_map() {
 
         if (hex) {
             highlightPlaneByHex(hex);
+            Planes[hex].selected = true;  // CJS Add - display A/C tail on highlight
         } else {
             removeHighlight();
+  		    deselectAllPlanes()   // CJS Add
         }
 
     })
