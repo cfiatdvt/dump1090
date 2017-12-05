@@ -1021,7 +1021,11 @@ function initialize_map() {
             Planes[hex].selected = true;  // CJS Add - display A/C tail on highlight
         } else {
             removeHighlight();
-  		    deselectAllPlanes()   // CJS Add
+// Start CJS Add
+            if (SelectedPlane == null) {
+		        deselectAllPlanes();
+	        }
+// End CJS Add
         }
 
     })
