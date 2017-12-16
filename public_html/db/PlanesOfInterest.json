@@ -1,47 +1,5 @@
 [
     {
-    "ICAO":"aaaaaa", 
-    "N": "test",
-    "symb": "CAP",
-    "chk": "No",
-    "type": "test"
-    },
-    {
-    "ICAO":"abbbbb", 
-    "N": "test",
-    "symb": "CAP",
-    "chk": "No",
-    "type": "test"
-    },
-    {
-    "ICAO":"accccc", 
-    "N": "test",
-    "symb": "CAP",
-    "chk": "No",
-    "type": "test"
-    },
-    {
-    "ICAO":"addddd", 
-    "N": "test",
-    "symb": "EMI",
-    "chk": "No",
-    "type": "test"
-    },
-    {
-    "ICAO":"aeeeee", 
-    "N": "test",
-    "symb": "PTA",
-    "chk": "No",
-    "type": "test"
-    },
-    {
-    "ICAO":"afffff", 
-    "N": "test",
-    "symb": "CAP",
-    "chk": "No",
-    "type": "test"
-    },
-    {
     "ICAO":"a1d00c", 
     "N": "N216CP",
     "symb": "CAP",
@@ -175,12 +133,26 @@
     "type":"E145"
     },     
     {
-    "ICAO":"aae4fa",
-    "N":"N8005X",
-    "symb": "HGT",
+    "ICAO":"a0c70b",
+    "N":"N1494H",
+    "symb": "PTA",
     "chk": "No",
-    "type":"E145"
-    },
+    "type":"PA28R-201T"
+    },     
+    {
+    "ICAO":"a1af3a",
+    "N":"N2076M",
+    "symb": "PTA",
+    "chk": "No",
+    "type":"PA28R-201T"
+    },  
+    {
+    "ICAO":"a30326",
+    "N":"N2931M",
+    "symb": "PTA",
+    "chk": "No",
+    "type":"PA28R-201T"
+    },     
     {
     "ICAO":"a367ef", 
     "N": "N31870",
@@ -348,5 +320,5 @@
     "symb": "PTA",
     "chk": "No",
     "type":"PA28RT-201T"
-    }     
+    }   
 ]
