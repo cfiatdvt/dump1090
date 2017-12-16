@@ -2123,6 +2123,8 @@ function refreshSelected() {
 //Start CJS Add
         $("#selected_version").text(selected.version);
         $("#selected_incat").text(selected.in10+selected.in9);
+        $('#selected_FAANNumberLookup_link').html(getFAANNumberLookupLink(selected.icao, selected.flight, selected.registration));
+
 //End CJS Add
     
         $("#selected_altitude").text(format_altitude_long(selected.altitude, selected.vert_rate, DisplayUnits));
@@ -2976,6 +2978,26 @@ function getFlightAwareModeSLink(code, ident, linkText) {
 
     return "";
 }
+
+//Start CJS Add
+function getFAANNumberLookupLink(icao, ident, reg) {
+    if (icao.charAt(0) == "A" || icao.charAt(0) == "a") {
+      if (!ident && !reg) {
+        var linkHtml = "<a target=\"_blank\" href=\"http://registry.faa.gov/aircraftinquiry/NNum_inquiry.aspx\">FAA N number query</a>";
+      } else {
+        var NNumber;
+        if (reg.charAt(0) == "N" || reg.charAt(0) == "n") {
+            NNumber = reg;
+        } else if (ident.charAt(0) == "N" || reg.charAt(0) == "n") {
+                NNumber = ident;
+            }
+        var linkHtml = "<a target=\"_blank\" href=\"http://registry.faa.gov/aircraftinquiry/NNum_Results.aspx?NNumbertxt=" + NNumber+ "\">FAA N number query</a>";
+      }
+      return linkHtml;
+    }
+    return "";
+}
+//End CJS Add
 
 function getFlightAwarePhotoLink(registration) {
     if (registration !== null && registration !== "") {
