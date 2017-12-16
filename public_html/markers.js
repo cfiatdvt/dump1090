@@ -84,6 +84,7 @@ var shapes = {
  //Aircraft with mode-S requesting TIS on 1090
         'emitter_plane': {
                 svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="25" height="25" stroke="black" stroke-width="8px"><defs><style>.cls-1{fill:aircraft_color_fill;}.cls-2 {fill:aircraft_color_stroke;}</style></defs><title>twin_small_live</title><g id="Layer_2" data-name="Layer 2"><g id="Twinprop_Small" data-name="Twinprop Small"><path class="cls-1" d="M 480,272 H 320 c 0,23.9-13.1,44.7-32.6,55.7 L 365.6,464 C 433.1,425.4,480,355.3,480,272 z M 256,208 c 11.7,0,22.7,3.2,32.1,8.7 l 80.6-138.3 C 335.6,59.1,297.1,48,256,48 c -41.2,0-79.9,11.2-113.1,30.6 l 79.8,138.8 C 232.4,211.4,243.8,208,256,208 z M 192,272 H 32 c 0,83.3,46.9,153.4,114.4,192 l 78.2-136.3 C 205.1,316.7,192,295.9,192,272 z"/></g></g></svg>',
+                //<circle cx="250" cy="250" r="200" stroke="red" fill="transparent" stroke-width="5"/> in case we want to make the coverage circle around the emitter.
                 size: [25,25],
                 noRotate: true,
                 rangeRing: true
@@ -400,11 +401,12 @@ function getBaseMarker(category, typeDesignator, typeDescription, wtc, icao, spd
 
 //Start CJS Add
 
-        if  ((alt < 9000.0 && spd > 340.0) || 
-             (alt < 7000.0 && spd > 310.0) || 
-             (alt < 5000.0 && spd > 280.0) ||
-             (alt < 3000.0 && spd > 240.0) 
-            )  {
+        if  (icao.charAt(0) == "~" && 
+             ((alt < 9000.0 && spd > 340.0) || 
+              (alt < 7000.0 && spd > 310.0) || 
+              (alt < 5000.0 && spd > 280.0) ||
+              (alt < 3000.0 && spd > 240.0) 
+            ))  {
                // Low and fast; must be a fighter jet
                typeDescription = 'FTR';
                return shapes[TypeDesignatorIcons[typeDescription]];
