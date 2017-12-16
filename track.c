@@ -542,6 +542,11 @@ struct aircraft *trackUpdateFromMessage(struct modesMessage *mm)
     // update addrtype, we only ever go towards "more direct" types
     if (mm->addrtype < a->addrtype)
         a->addrtype = mm->addrtype;
+//Start CJS Add
+    else 
+        if (mm->addrtype == ADDR_ADSR_ICAO)
+            a->addrtype = mm->addrtype;
+//End CJS Add
 
     if (mm->altitude_valid && mm->altitude_source == ALTITUDE_BARO && accept_data(&a->altitude_valid, mm->source, now)) {
         if (a->modeC_hit) {
