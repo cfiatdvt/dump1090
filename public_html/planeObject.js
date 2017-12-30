@@ -460,7 +460,7 @@ PlaneObject.prototype.updateIcon = function() {
                 } else {
                        this.markerIcon = icon;
                        this.markerStaticIcon = null;
-                       if (this.addrtype == "adsr_icao" && $('#emitter_checkbox').hasClass('settingsCheckboxChecked')) {
+                       if ((this.addrtype == "adsr_icao" || this.addrtype == "adsr_other") && $('#emitter_checkbox').hasClass('settingsCheckboxChecked')) {
                            this.markerStaticStyle = new ol.style.Style({
                                text: new ol.style.Text({
                                     font: '20px Calibri, sans-serif',
