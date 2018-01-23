@@ -229,11 +229,18 @@ var TypeDesignatorIcons = {
         'DC10': 'dc10_plane',
         'C130': 'c130_plane',  //Why were these taken out with the 3.5.0 release?
         'C30J': 'c130_plane',
+        'B37M': 'b73x_plane',
+        'B38M': 'b73x_plane',
+        'B39M': 'b73x_plane',
+        'B3JM': 'b73x_plane',
         'B762': 'heavy_2e',
         'B763': 'heavy_2e',
+        'B77X': 'b777_plane',
         'B788': 'heavy_2e',
         'B789': 'heavy_2e',
         'B780': 'heavy_2e',
+        'B78X': 'heavy_2e',
+        'K35E': 'kc135_plane',
         'K35R': 'kc135_plane',
         'CAP': 'cap_plane',      //Civil Air Patrol AZ wing airplanes, identified by ICAO 
         'EMI': 'hi_perf',        //ADSB requesting TIS on 1090, identified by ICAO - From PlanesOfInterest.json
