@@ -101,6 +101,12 @@ var shapes = {
                 size: [20,20],
                 noRotate: true
          },
+//Cessna  
+        'cessna_plane': {
+                svg: '<svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="40" height="35" viewBox="12 9 57 10" id="svg15546"> <defs id="defs15548"/>  <path d="m 25.0864,21.0275 0,-8.37875 13.6475,0 -4.93375,4.9725 c -2.10875,2.17 -3.30625,3.34625 -6.7225,3.40625 -0.025,0 -1.99125,0 -1.99125,0 m 8.38,8.38125 8.37875,0 0,-13.6475 -4.9725,4.93375 c -2.16875,2.10875 -3.34625,3.30625 -3.40625,6.72125 0,0.0262 0,1.9925 0,1.9925" id="path14942" style="fill:#d7083c;fill-opacity:1;fill-rule:nonzero;stroke:none"/>  <path d="M 25.0864,8.37875 25.0864,0 51.48515,0 46.5514,4.9725 c -2.10875,2.16875 -3.305,3.34625 -6.7225,3.40625 -0.0238,0 -14.7425,0 -14.7425,0 m 21.02875,21.03 8.38,0 0,-26.49125 -4.97375,4.98 c -2.4225,2.3825 -3.34625,3.215 -3.40625,6.63125 0,0.025 0,14.88 0,14.88" id="path14950" style="fill:#0063be;fill-opacity:1;fill-rule:nonzero;stroke:none"/></svg>',
+                size: [40,35],
+                noRotate: true
+         },
         'c130_plane': {
                 svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="30px" height="30px" stroke="black" stroke-width="2px"><defs><style>.cls-1{fill:aircraft_color_fill;}.cls-2{fill:aircraft_color_stroke;}</style></defs><title>twin_small_live</title><g id="Layer_2" data-name="Layer 2"><g id="Twinprop_Small" data-name="Twinprop Small"><path class="cls-1" d="m 31,1 1,0 1,1 1,2 0,8 3,0 0,-3 1,-1 1,1 0,3 6,0 0,-3 1,-1 1,1 0,3 10,1 0,2 -1,1 -17,3 -5,0 0,10 -1,1 8,2 0,1 -1,1 -8,0 -1,1 -1,-1 -8,0 -1,-1 0,-1 8,-2 -1,-1 0,-10 -5,0 -17,-3 -1,-1 0,-2 10,-1 0,-3 1,-1 1,1 0,3 6,0 0,-3 1,-1 1,1 0,3 3,0 0,-8 1,-2 1,-1 z"/></g></g></svg>',
                 size: [30,30]
@@ -248,6 +254,7 @@ var TypeDesignatorIcons = {
         'FTR': 'fighter_jet',    //Fighters, dentified by high-speed/low-altitude combo
         'HGT': 'intel_plane',    //GJT (Intel) Shuttle fleet, identified by ICAO
         'PTA': 'piper_plane',    //Piper Turbo Arrows based in AZ, identified by ICAO
+        'CES': 'cessna_plane',   //Cessnas of interest
 //End CJS Add
 
 
