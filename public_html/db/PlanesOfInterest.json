@@ -14,6 +14,13 @@
     "type":"T206H"
     },
     {
+    "ICAO":"a31372",
+    "N":"N298CP",
+    "symb": "CAP",
+    "chk": "No",
+    "type":"C182T"
+    },
+    {
     "ICAO":"a41f12",
     "N":"N365CA",
     "symb": "CAP",
@@ -242,7 +249,8 @@
     "N":"N6166H",
     "symb": "PTA",
     "chk": "No",
-    "type":"PA28R-201T"
+    "type":"PA28R-201T",
+    "note":"DVT Hangar 27-9, Greg McColley"
     },     
     {
     "ICAO":"a862c1",
@@ -319,6 +327,15 @@
     "N":"N9145M",
     "symb": "PTA",
     "chk": "No",
-    "type":"PA28RT-201T"
-    }   
+    "type":"PA28RT-201T",
+    "Note": "DVT hangar 7-2, Anthony Valenzuela 21723 N 61st Ave"
+    },   
+    {
+    "ICAO":"a26574",
+    "N":"N2533R",
+    "symb": "CES",
+    "chk": "No",
+    "type":"C182K",
+    "Note": "DVT hangar 44-3, Mike Adams"
+    }
 ]
