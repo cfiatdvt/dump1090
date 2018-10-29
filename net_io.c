@@ -1368,7 +1368,7 @@ char *generateAircraftJson(const char *url_path, int *len) {
             p = safe_snprintf(p, end, ",\"gva\":%u", a->gva);
         if (trackDataValid(&a->sda_valid))
             p = safe_snprintf(p, end, ",\"sda\":%u", a->sda);
-//Start CJS Add
+//Start CJS Add @
         if (a->adsb_version == 2) {
             p += snprintf(p, end-p, ",\"in10\":\"%u\"", a->es_in );
             p += snprintf(p, end-p, ",\"in9\":\"%u\"", a->uat_in );

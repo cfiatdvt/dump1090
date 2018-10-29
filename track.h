@@ -203,7 +203,7 @@ struct aircraft {
     unsigned      gva : 2;        // GVA from opstatus
     unsigned      sda : 2;        // SDA from opstatus
 
-//Start CJS add
+//Start CJS add @
     unsigned      es_in;
     unsigned      uat_in;
 //End CJS add
