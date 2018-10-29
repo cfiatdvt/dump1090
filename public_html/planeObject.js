@@ -5,14 +5,44 @@ function PlaneObject(icao) {
         this.icao      = icao;
         this.icaorange = findICAORange(icao);
         this.flight    = null;
-	this.squawk    = null;
-	this.selected  = false;
+        this.squawk    = null;
+        this.selected  = false;
         this.category  = null;
 
 	// Basic location information
-        this.altitude  = null;
-        this.speed     = null;
-        this.track     = null;
+        this.altitude       = null;
+        this.alt_baro       = null;
+        this.alt_geom       = null;
+
+        this.speed          = null;
+        this.gs             = null;
+        this.ias            = null;
+        this.tas            = null;
+
+        this.track          = null;
+        this.track_rate     = null;
+        this.mag_heading    = null;
+        this.true_heading   = null;
+        this.mach           = null;
+        this.roll           = null;
+        this.nav_altitude   = null;
+        this.nav_heading    = null;
+        this.nav_modes      = null;
+        this.nav_qnh        = null;
+        this.rc				= null;
+		
+        this.nac_p			= null;
+        this.nac_v			= null;
+        this.nic_baro		= null;
+        this.sil_type		= null;
+        this.sil			= null;
+
+        this.baro_rate      = null;
+        this.geom_rate      = null;
+        this.vert_rate      = null;
+
+        this.version        = null;
+
         this.prev_position = null;
         this.position  = null;
         this.position_from_mlat = false
@@ -53,14 +83,6 @@ function PlaneObject(icao) {
         this.typeDescription = null;
         this.wtc = null;
 
-//Start CJS Add
-        this.version = null;
-        this.in10 = null;
-        this.in9 = null;
-        this.nacp = null;
-        this.nacv = null;
-//End CJS Add
-    
         // request metadata
         getAircraftData(this.icao).done(function(data) {
                 if ("r" in data) {
@@ -361,13 +383,7 @@ PlaneObject.prototype.updateIcon = function() {
         var opacity = 1.0;
         var outline = (this.position_from_mlat ? OutlineMlatColor : OutlineADSBColor);
         var add_stroke = (this.selected && !SelectedAllPlanes) ? ' stroke="black" stroke-width="1px"' : '';
-//Start CJS Add
-        // Emitter: an aircraft requesting TIS data on 1090.  
-        var emitter = (this.version == "2" && this.in10 == "1" && this.in9 == "0" && this.nacp > 4 && this.altitude < 24000 ? true : false)
-//End CJS Add
-//Start CJS Change
-        var baseMarker = getBaseMarker(this.category, this.icaotype, this.typeDescription, this.wtc, this.icao, this.speed, this.altitude, emitter);
-//End CJS Change
+        var baseMarker = getBaseMarker(this.category, this.icaotype, this.typeDescription, this.wtc);
         var rotation = (this.track === null ? 0 : this.track);
         //var transparentBorderWidth = (32 / baseMarker.scale / scaleFactor).toFixed(1);
 
@@ -389,112 +405,13 @@ PlaneObject.prototype.updateIcon = function() {
                         rotateWithView: (baseMarker.noRotate ? false : true)
                 });
 
-//Start CJS Add
-// Bring back no-rotate heading pointers
-                if (baseMarker.noRotate) {
-                        // the base marker won't be rotated
-                        var labelText = '';
-                        if (iconNumericTag == true) {
-                            labelText     = (this.flight ? this.flight : registration_from_hexid(this.icao));
-                            labelText     = labelText + " " + (this.altitude ? parseInt(this.altitude/100) : '?');
-                        }
-                        this.markerStaticIcon = icon;
-                        this.markerStaticStyle = new ol.style.Style({
-                               image: this.markerStaticIcon,
-                               text: new ol.style.Text({
-                                    font: '7px Calibri, sans-serif',
-                                    stroke: new ol.style.Stroke({color: "fff", width: 0.1}),
-                                    offsetX: -2,
-                                    offsetY: +24,
-                                    text: labelText 
-                               })
-                        });
+                this.markerIcon = icon;
+                this.markerStyle = new ol.style.Style({
+                        image: this.markerIcon
+                });
+                this.markerStaticIcon = null;
+                this.markerStaticStyle = new ol.style.Style({});
 
-                        // create an arrow that we will rotate around the base marker
-                        // to indicate heading
-
-                        var arrowPath = '<svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="black" ><path d="M 20,0 m 4,4 -8,0 4,-4 z"/></svg>';
-                        this.markerIcon = new ol.style.Icon({
-                                anchor: [20, 20],
-                                anchorXUnits: 'pixels',
-                                anchorYUnits: 'pixels',
-                                scale: 1.3,
-                                imgSize: [40, 40],
-                                src: "data:image/svg+xml;base64," + btoa(arrowPath),
-                                rotation: rotation * Math.PI / 180.0,
-                                opacity: 1.0,
-                                rotateWithView: true
-                        });
-                        this.markerStyle = new ol.style.Style({
-                                image: this.markerIcon
-                        });
-                    
-                        if (baseMarker.rangeRing) {
-                            // Dist ring for EMT
-                            EmitCircleFeatures.forEach(function(emitCircFeature) {
-                                if (emitCircFeature.ICAO == this.icao) {
-                                    EmitCircleFeatures.remove(emitCircFeature);
-                                }
-                            },this);
-                            var distance = 15 * 1852; //15 NM radius circle around TIS-requestor airplane
-                            var circle = make_geodesic_circle(this.position, distance, 360);
-                            circle.transform('EPSG:4326', 'EPSG:3857');
-                            var feature = new ol.Feature(circle);
-
-                            var circleStyle = function(distance) {
-    	                        return new ol.style.Style({
-                                    fill: null,
-                                    stroke: new ol.style.Stroke({
-                                        color: '#f04040',
-                                        width: 0.5
-                                    }),
-                                });
-                            };
-                    
-                            feature.setStyle(circleStyle(distance));
-                            feature.ICAO = this.icao;
-                            EmitCircleFeatures.push(feature);
-                        }
-
-
-                } else {
-                       this.markerIcon = icon;
-                       this.markerStaticIcon = null;
-                       if ((this.addrtype == "adsr_icao" || this.addrtype == "adsr_other") && $('#emitter_checkbox').hasClass('settingsCheckboxChecked')) {
-                           this.markerStaticStyle = new ol.style.Style({
-                               text: new ol.style.Text({
-                                    font: '20px Calibri, sans-serif',
-                                    stroke: new ol.style.Stroke({color: "#f00000", width: 3}),
-                                    offsetX: -2,
-                                    offsetY: -24,
-                                    text: "R" 
-                                })
-                           });
-                       } else {
-                           this.markerStaticStyle = new ol.style.Style({});
-                       }
-                       if (iconNumericTag == true) {  
-                             var labelText = '';
-                            labelText     = (this.flight ? this.flight : registration_from_hexid(this.icao));
-                            labelText     = labelText + " " + (this.altitude ? parseInt(this.altitude/100) : '?');
-                            // Numeric data for each icon
-                            this.markerStyle = new ol.style.Style({
-                                text: new ol.style.Text({
-                                    font: '7px Calibri, sans-serif',
-                                    stroke: new ol.style.Stroke({color: "fff", width: 0.1}),
-                                    offsetX: -2,
-                                    offsetY: +24,
-                                    text: labelText 
-                                }),
-                            image: this.markerIcon
-                            });
-                        } else {
-                            this.markerStyle = new ol.style.Style({
-                                image: this.markerIcon
-                            });
-                        }
-                }
-//End CJS Add
                 this.markerStyleKey = styleKey;
                 this.markerSvgKey = svgKey;
 
@@ -523,21 +440,36 @@ PlaneObject.prototype.updateData = function(receiver_timestamp, data) {
 	this.messages	= data.messages;
         this.rssi       = data.rssi;
 	this.last_message_time = receiver_timestamp - data.seen;
+
+        // simple fields
+
+        var fields = ["alt_baro", "alt_geom", "gs", "ias", "tas", "track",
+                      "track_rate", "mag_heading", "true_heading", "mach",
+					  "roll", "nav_altitude", "nav_heading", "nav_modes",
+					  "nac_p", "nac_v", "nic_baro", "sil_type", "sil",
+                      "nav_qnh", "baro_rate", "geom_rate", "rc",
+                      "squawk", "category", "version"];
+
+        for (var i = 0; i < fields.length; ++i) {
+                if (fields[i] in data) {
+                        this[fields[i]] = data[fields[i]];
+                } else {
+                        this[fields[i]] = null;
+                }
+        }
+
+        // fields with more complex behaviour
         
-        if (typeof data.type !== "undefined")
+        if ('type' in data)
                 this.addrtype	= data.type;
         else
                 this.addrtype   = 'adsb_icao';
 
-        if (typeof data.altitude !== "undefined")
-		this.altitude	= data.altitude;
-        if (typeof data.vert_rate !== "undefined")
-		this.vert_rate	= data.vert_rate;
-        if (typeof data.speed !== "undefined")
-		this.speed	= data.speed;
-        if (typeof data.track !== "undefined")
-                this.track	= data.track;
-        if (typeof data.lat !== "undefined") {
+        // don't expire callsigns
+        if ('flight' in data)
+                this.flight	= data.flight;
+
+        if ('lat' in data && 'lon' in data) {
                 this.position   = [data.lon, data.lat];
                 this.last_position_time = receiver_timestamp - data.seen_pos;
 
@@ -556,27 +488,36 @@ PlaneObject.prototype.updateData = function(receiver_timestamp, data) {
                         }
                 }
         }
-        if (typeof data.flight !== "undefined")
-		this.flight	= data.flight;
-        if (typeof data.squawk !== "undefined")
-		this.squawk	= data.squawk;
-        if (typeof data.category !== "undefined")
-                this.category	= data.category;
 
-//Start CJS Add
-        if (typeof data.ver !== "undefined")
-                this.version	= data.ver;
-        if (typeof data.in10 !== "undefined")
-                this.in10	= data.in10;
-        if (typeof data.in9 !== "undefined")
-                this.in9	= data.in9;
-        if (typeof data.nacp !== "undefined")
-                this.nacp	= data.nacp;
-        if (typeof data.nacv !== "undefined")
-                this.nacv	= data.nacv;
+        // Pick an altitude
+        if ('alt_baro' in data) {
+                this.altitude = data.alt_baro;
+        } else if ('alt_geom' in data) {
+                this.altitude = data.alt_geom;
+        } else {
+                this.altitude = null;
+        }
 
-//End CJS Add
-    
+        // Pick vertical rate from either baro or geom rate
+        // geometric rate is generally more reliable (smoothed etc)
+        if ('geom_rate' in data) {
+                this.vert_rate = data.geom_rate;
+        } else if ('baro_rate' in data) {
+                this.vert_rate = data.baro_rate;
+        } else {
+                this.vert_rate = null;
+        }
+
+        // Pick a speed
+        if ('gs' in data) {
+                this.speed = data.gs;
+        } else if ('tas' in data) {
+                this.speed = data.tas;
+        } else if ('ias' in data) {
+                this.speed = data.ias;
+        } else {
+                this.speed = null;
+        }
 };
 
 PlaneObject.prototype.updateTick = function(receiver_timestamp, last_timestamp) {
@@ -615,16 +556,6 @@ PlaneObject.prototype.clearMarker = function() {
                 PlaneIconFeatures.remove(this.markerStatic);
                 /* FIXME google.maps.event.clearListeners(this.marker, 'click'); */
                 this.marker = this.markerStatic = null;
-        
-// Start CJS Add
-        EmitCircleFeatures.forEach(function(emitCircFeature) {
-            if (emitCircFeature.ICAO == this.icao) {
-                EmitCircleFeatures.remove(emitCircFeature);
-            }
-        },this);
-// End CJS Add
-        
-        
 	}
 };
 

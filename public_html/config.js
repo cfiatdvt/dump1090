@@ -23,10 +23,10 @@ DisplayUnits = "nautical";
 // degrees.
 
 // Default center of the map.
-DefaultCenterLat = 33.8;
-DefaultCenterLon = -112.17;
+DefaultCenterLat = 45.0;
+DefaultCenterLon = 9.0;
 // The google maps zoom level, 0 - 16, lower is further out
-DefaultZoomLvl   = 9;
+DefaultZoomLvl   = 7;
 
 // Center marker. If dump1090 provides a receiver location,
 // that location is used and these settings are ignored.
@@ -99,7 +99,7 @@ SiteCircles = true; // true to show circles (only shown if the center marker is 
 SiteCirclesDistances = new Array(100,150,200);
 
 // Controls page title, righthand pane when nothing is selected
-PageName = "Chris 1090 Reveiver View";
+PageName = "PiAware Skyview";
 
 // Show country flags by ICAO addresses?
 ShowFlags = true;
@@ -108,7 +108,7 @@ ShowFlags = true;
 FlagPath = "flags-tiny/";
 
 // Set to true to enable the ChartBundle base layers (US coverage only)
-ChartBundleLayers = true;
+ChartBundleLayers = false;
 
 // Provide a Bing Maps API key here to enable the Bing imagery layer.
 // You can obtain a free key (with usage limits) at
@@ -119,11 +119,7 @@ ChartBundleLayers = true;
 //
 BingMapsAPIKey = null;
 
-// Provide a Mapzen API key here to enable the Mapzen vector tile layer.
-// You can obtain a free key at https://mapzen.com/developers/
-// (you need a "vector tiles" key)
-//
-// Be sure to quote your key:
-//   MapzenAPIKey = "your key here";
-//
-MapzenAPIKey = null;
+// Turn on display of extra Mode S EHS / ADS-B v1/v2 data
+// This is not polished yet (and so is disabled by default),
+// currently it's just a data dump of the new fields with no UX work.
+ExtendedData = false;
