@@ -243,7 +243,7 @@ function format_data_source(source) {
 			return "A!Xp";
 		case 'adsr_icao':
 		case 'adsr_other':
-//Start CJS Add
+//Start CJS Add @
 			return "Rebr";
 		case 'adsr_icao_nt':
             return "R!Xp";

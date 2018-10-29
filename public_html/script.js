@@ -2273,7 +2273,7 @@ function refreshSelected() {
         //         emerg.className = 'hidden';
         // }
 
-//Start CJS Add
+//Start CJS Add @
         $("#selected_version").text(selected.version);
         $("#selected_incat").text(selected.in10+selected.in9);
         $('#selected_FAANNumberLookup_link').html(getFAANNumberLookupLink(selected.icao, selected.flight, selected.registration)); 

@@ -388,7 +388,7 @@ PlaneObject.prototype.updateIcon = function() {
         var opacity = 1.0;
         var outline = (this.position_from_mlat ? OutlineMlatColor : OutlineADSBColor);
         var add_stroke = (this.selected && !SelectedAllPlanes) ? ' stroke="black" stroke-width="1px"' : '';
-//Start CJS Add
+//Start CJS Add @
         // Emitter: an aircraft requesting TIS data on 1090.  
         var emitter = (this.version == "2" && this.in10 == "1" && this.in9 == "0" && this.nac_p > 4 && this.altitude < 24000 ? true : false)
 //End CJS Add

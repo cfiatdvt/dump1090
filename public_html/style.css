@@ -9,7 +9,7 @@ html, body {
     height: calc(100% - 60px);;
 }
 
-#selected_infoblock {
+#selected_infoblock  {
 	position: absolute;
 	bottom: 0;
 	margin: 0;

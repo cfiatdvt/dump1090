@@ -74,7 +74,7 @@ ColorByAlt = {
         // Changes added to the color of planes that have stale position info
         stale :    { h: 0, s: -10, l: +30 },
 
-        // Changes added to the color of planes that have positions from mlat
+        //  Changes added to the color of planes that have positions from mlat
         mlat :     { h: 0, s: -10, l: -10 }
 };
 

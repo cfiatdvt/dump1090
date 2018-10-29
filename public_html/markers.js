@@ -217,7 +217,7 @@ var TypeDesignatorIcons = {
         'MD87': 'jet_swept',
         'MD88': 'jet_swept',
 
-//Start CJS Add
+//Start CJS Add @
         'MD11': 'dc10_plane', 
         'DC10': 'dc10_plane',
         'C130': 'c130_plane',  //Why were these taken out with the 3.5.0 release?
