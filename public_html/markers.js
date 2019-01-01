@@ -107,6 +107,12 @@ var shapes = {
                 size: [40,35],
                 noRotate: true
          },
+//Mooney  
+        'mooney_plane': {
+                svg: '<svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="40" height="35" viewBox="26 23 371 144"> <defs id="defs15548"/> <polyline style="stroke:black;fill:#f55;stroke-width:3px;" id="e9_polyline" points="26.7,61.2 53.6124,63.8752 86.4531,62.5616 114.696,60.5912 144.909,61.248 156.075,61.9048 168.555,43.514 167.734,41.3793 161.822,40.3941 165.928,33.0049 175.123,29.7208 177.093,25.1231 190.886,23.8095 204.023,23.8095 208.621,24.7947 213.875,26.1083 218.473,29.064 224.384,39.5731 240.148,61.9048 269.047,60.5912 290.722,61.248 315.024,63.2184 332.101,63.711 348.522,63.8752 362.972,61.248 370.197,61.248 359.688,71.1002 343.924,82.9229 325.041,94.4173 313.711,98.1939 297.126,100.821 286.289,101.314 277.915,102.587 272.988,104.023 259.195,82.8001 243.596,87.2951 217.077,99.559 201.519,108.482 198.276,110.838 191.051,106.568 174.794,98.0299 156.075,89.9839 139.819,83.9905 136.617,83.1284 121.634,103.715 110.098,101.806 95.8125,100.903 79.3101,97.9885 64.655,91.2767 49.0147,80.6241 26.7,61.2"/><polyline style="stroke:black;fill:gray;stroke-width:3px;" id="e11_polyline" points="90.162,106.123 122.674,111.049 142.05,88.389 197.551,116.468 253.052,88.7174 271.443,111.049 304.612,105.795 261.262,126.484 248.454,113.676 197.88,143.233 146.648,114.005 134.333,125.992 89.8336,106.123"/> </svg>',
+                size: [40,35],
+                noRotate: true
+         },
         'c130_plane': {
                 svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="30px" height="30px" stroke="black" stroke-width="2px"><defs><style>.cls-1{fill:aircraft_color_fill;}.cls-2{fill:aircraft_color_stroke;}</style></defs><title>twin_small_live</title><g id="Layer_2" data-name="Layer 2"><g id="Twinprop_Small" data-name="Twinprop Small"><path class="cls-1" d="m 31,1 1,0 1,1 1,2 0,8 3,0 0,-3 1,-1 1,1 0,3 6,0 0,-3 1,-1 1,1 0,3 10,1 0,2 -1,1 -17,3 -5,0 0,10 -1,1 8,2 0,1 -1,1 -8,0 -1,1 -1,-1 -8,0 -1,-1 0,-1 8,-2 -1,-1 0,-10 -5,0 -17,-3 -1,-1 0,-2 10,-1 0,-3 1,-1 1,1 0,3 6,0 0,-3 1,-1 1,1 0,3 3,0 0,-8 1,-2 1,-1 z"/></g></g></svg>',
                 size: [30,30]
@@ -242,6 +248,7 @@ var TypeDesignatorIcons = {
         'HGT': 'intel_plane',    //GJT (Intel) Shuttle fleet, identified by ICAO
         'PTA': 'piper_plane',    //Piper Turbo Arrows based in AZ, identified by ICAO
         'CES': 'cessna_plane',   //Cessnas of interest
+        'MNY': 'mooney_plane',   //Mooneys of interest
 //End CJS Add
 
 
