@@ -144,7 +144,8 @@
     "N":"N1494H",
     "symb": "PTA",
     "chk": "No",
-    "type":"PA28R-201T"
+    "type":"PA28R-201T",
+    "note": "978/UAT"
     },     
     {
     "ICAO":"a1af3a",
@@ -165,7 +166,8 @@
     "N": "N31870",
     "symb": "PTA",
     "chk": "No",
-    "type": "PA28R-201T"
+    "type": "PA28R-201T",
+    "note": "DVT Hangar 35-9"
     },
     {
     "ICAO":"a3c78c",
@@ -232,7 +234,7 @@
     },     
     {
     "ICAO":"a7601a",
-    "N":"N5743v",
+    "N":"N5743V",
     "symb": "PTA",
     "chk": "No",
     "type":"PA28R-201T"
@@ -242,7 +244,8 @@
     "N":"N6071H",
     "symb": "PTA",
     "chk": "No",
-    "type":"PA28R-201T"
+    "type":"PA28R-201T",
+    "Note": "DVT hangar 4-9"
     },
     {
     "ICAO":"a8083a",
@@ -337,5 +340,21 @@
     "chk": "No",
     "type":"C182K",
     "Note": "DVT hangar 44-3, Mike Adams"
+    },
+    {
+    "ICAO":"a14944",
+    "N":"N182MY",
+    "symb": "CES",
+    "chk": "No",
+    "type":"C182K",
+    "Note": "DVT Yasutaka"
+    },
+    {
+    "ICAO":"ad5a01",
+    "N":"N96CB",
+    "symb": "MNY",
+    "chk": "No",
+    "type":"M20J",
+    "Note": "DVT Russ Miller"
     }
 ]
