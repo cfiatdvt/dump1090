@@ -1071,6 +1071,7 @@ function initialize_map() {
 
         if (hex) {
             highlightPlaneByHex(hex);
+            Planes[hex].selected = true; //CJS display A/C tail on highlight
         } else {
             removeHighlight();
  // Start CJS Add
