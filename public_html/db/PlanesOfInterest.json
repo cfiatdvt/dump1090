@@ -356,5 +356,13 @@
     "chk": "No",
     "type":"M20J",
     "Note": "DVT Russ Miller"
+    },
+    {
+    "ICAO":"a20cb0",
+    "N":"N231EW",
+    "symb": "MNY",
+    "chk": "No",
+    "type":"M20K",
+    "Note": "DVT Russ Miller"
     }
 ]
