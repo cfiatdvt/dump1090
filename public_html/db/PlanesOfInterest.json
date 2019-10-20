@@ -21,6 +21,13 @@
     "type":"C182T"
     },
     {
+    "ICAO":"a399c6",
+    "N":"N331CP",
+    "symb": "CAP",
+    "chk": "No",
+    "type":"C172S"
+    },
+    {
     "ICAO":"a41f12",
     "N":"N365CA",
     "symb": "CAP",
